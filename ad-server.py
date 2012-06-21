@@ -122,7 +122,7 @@ class MainHandler(tornado.web.RequestHandler):
 	connection.close()
 
     def segment(self,info):
-	if 1=1:
+	if True==True:
 		group=int(self.get_argument('group'))
 		imp_uid=self.get_cookie("imp_uid",default=False)
 		if imp_uid==False:
