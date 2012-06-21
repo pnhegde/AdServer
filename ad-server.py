@@ -1,3 +1,7 @@
+#ADSERVER Request Format
+# http://rtbidder.impulse01.com/serve?{Base64-Encoded-Params}|||{Encrypted-Price}|||{Third-Party-Redirect-Url}
+# http://rtbidder.impulse01.com/click?{Base64-Encoded-Params}|||{Redirect-Url}
+
 import tornado.ioloop
 import tornado.web
 import tornado.httpclient
@@ -31,6 +35,7 @@ class MainHandler(tornado.web.RequestHandler):
     def serve(self,info):
 	params = info.split("|||")
 	args = json.loads(base64.b64decode(params[0]))
+        args = args.replace("-","+").replace("_","/")
 	enc_price = params[1]
 	third_party_url = params[2]
 	ip = self.request.remote_ip
@@ -41,9 +46,9 @@ class MainHandler(tornado.web.RequestHandler):
 		url = adIndex['c:'+str(args['cid'])+':url']
 
 	if len(third_party_url)==0:
-		finalUrl="http://rtbidder.impulse01.com/click?params="+params[0]+"&redirect="+url
+		finalUrl="http://rtbidder.impulse01.com/click?"+params[0]+"|||"+url
 	else:
-		finalUrl=third_party_url+urllib.quote("http://rtbidder.impulse01.com/click?params="+params[0]+"&redirect="+url)
+		finalUrl=third_party_url+urllib.quote("http://rtbidder.impulse01.com/click?"+params[0]+"|||"+url)
 
 	creativeUrl = adIndex['b:'+str(args['bid'])+':url']
 	bannerData = adIndex['b:'+str(args['bid'])+':data']
@@ -82,9 +87,35 @@ class MainHandler(tornado.web.RequestHandler):
 
 
     def click(self,info):
-	self.write("click")
-	self.write(info)
-	self.write("<br />")
+	params = info.split("|||")
+	args = json.loads(base64.b64decode(params[0]))
+	redirect_url = params[1]
+
+        log={"message":"CLK",
+        "campaignId":str(args['cid']),
+        "bannerId":str(args['bid']),
+        "exchange":str(args['e']),
+        "domain":str(args['d']),
+	"timestamp":datetime.date.today().strftime("%Y-%d-%m %H:%M:%S"),
+	"clickUrl":redirect_url,
+        }
+	message=json.dumps(log)
+
+	connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
+	channel = connection.channel()
+	channel.queue_declare(queue='clicks')
+	channel.basic_publish(exchange='',routing_key='clicks',body=message)
+	connection.close()
+
+        cookieval=b64.b64encode(json.dumps({"campaignId":str(args['cid']),
+        "bannerId":str(args['bid']),
+        "exchange":str(args['e']),
+        "domain":str(args['d']),
+	"timestamp":datetime.date.today().strftime("%Y-%d-%m %H:%M:%S")
+        }))
+	cookiename = 'c'+str(args['cid'])
+	set_cookie(cookiename,cookieval,expires_days=30)
+	set_header("Location",redirect_url)
 
     def segment(self,info):
 	self.write("segment")
