@@ -1,6 +1,6 @@
 #ADSERVER Request Format
-# http://rtbidder.impulse01.com/serve?{Base64-Encoded-Params}|||{Encrypted-Price}|||{Third-Party-Redirect-Url}
-# http://rtbidder.impulse01.com/click?{Base64-Encoded-Params}|||{Redirect-Url}
+# IMPRESSION - http://rtbidder.impulse01.com/serve?{Base64-Encoded-Params}|||{Encrypted-Price}|||{Third-Party-Redirect-Url}
+# CLICK - http://rtbidder.impulse01.com/click?{Base64-Encoded-Params}|||{Redirect-Url}
 
 import tornado.ioloop
 import tornado.web
@@ -101,6 +101,7 @@ class MainHandler(tornado.web.RequestHandler):
 	cookiename = 'c'+str(args['cid'])
 	self.set_cookie(cookiename,cookieval,expires_days=30)
 	self.redirect(redirect_url)
+	self.flush()
 
         log={"message":"CLK",
         "campaignId":str(args['cid']),
@@ -112,6 +113,7 @@ class MainHandler(tornado.web.RequestHandler):
         }
 	message=json.dumps(log)
 
+	#Push this click to rabbitMQ for logging
 	connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
 	channel = connection.channel()
 	channel.queue_declare(queue='clicks')
@@ -119,9 +121,8 @@ class MainHandler(tornado.web.RequestHandler):
 	connection.close()
 
     def segment(self,info):
-	self.write("segment")
-	self.write(info)
-	self.write("<br />")
+	group=self.get_argument('group')
+	self.write(group)
 
     def sync(self,info):
 	self.write("sync")
