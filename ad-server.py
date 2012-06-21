@@ -130,6 +130,7 @@ class MainHandler(tornado.web.RequestHandler):
 		else :
 			print "existed"
 	except:
+		print "segment exception"
 
     def sync(self,info):
 	self.write("sync")
