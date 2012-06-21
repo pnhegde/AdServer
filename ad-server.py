@@ -124,11 +124,11 @@ class MainHandler(tornado.web.RequestHandler):
 	try:
 		group=int(self.get_argument('group'))
 		imp_uid=self.get_cookie("imp_uid",default=False)
-			if imp_uid==False:
-				print "didnt exist"
-				self.set_cookie("imp_uid","stuff")
-			else :
-				print "existed"
+		if imp_uid==False:
+			print "didnt exist"
+			self.set_cookie("imp_uid","stuff")
+		else :
+			print "existed"
 		
 
     def sync(self,info):
