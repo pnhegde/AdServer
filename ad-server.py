@@ -122,7 +122,14 @@ class MainHandler(tornado.web.RequestHandler):
 
     def segment(self,info):
 	group=self.get_argument('group')
-	self.write(group)
+	if isinstance(group,int):
+		imp_uid=self.get_cookie("imp_uid",default=False)
+		if imp_uid==False:
+			print "didnt exist"
+			self.set_cookie("imp_uid","stuff")
+		else :
+			print "existed"
+		
 
     def sync(self,info):
 	self.write("sync")
