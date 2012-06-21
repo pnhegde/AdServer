@@ -107,11 +107,10 @@ def refreshCache():
     try:
         response = http_client.fetch("http://user.impulse01.com/ad-index.php")
         invertedIndex=json.loads(response.body)
-	print "refreshed"
     except:
         invertedIndex=dict()
-	print "cannot refresh"
     adIndex=invertedIndex
+    
 
 define("port", default=8888, help="run on the given port", type=int)
 define("name", default="noname", help="name of the server")
