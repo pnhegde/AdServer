@@ -1,6 +1,7 @@
 #ADSERVER Request Format
 # IMPRESSION - http://rtbidder.impulse01.com/serve?{Base64-Encoded-Params}|||{Encrypted-Price}|||{Third-Party-Redirect-Url}
 # CLICK - http://rtbidder.impulse01.com/click?{Base64-Encoded-Params}|||{Redirect-Url}
+# SEGMENT - http://rtbidder.impulse01.com/segment?group={GroupId}
 
 import tornado.ioloop
 import tornado.web
@@ -30,6 +31,8 @@ class MainHandler(tornado.web.RequestHandler):
 		self.segment(self.request.query)
         if self.request.path=="/sync":
 		self.sync(self.request.query)
+        if self.request.path=="/pixel":
+		self.pixel(self.request.query)
         if self.request.path=="/conv":
 		self.conversion(self.request.query)
 
@@ -166,15 +169,36 @@ class MainHandler(tornado.web.RequestHandler):
 
     def sync(self,info):
 	print "sync request"
-	self.set_cookie("sy","yes")
+	self.set_cookie("sy","yes",expires_days=30)
 	self.set_header("Content-type","image/gif")
 	#NOTE - This is the binary of a 1x1 gif pixel in base64 encoded form
 	self.write(base64.b64decode("R0lGODlhAQABAIAAAP///wAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw=="))
 
+    def pixel(self,info):
+	try:
+		group=int(self.get_argument('group'))
+		self.write("<script src=\"http://i.simpli.fi/dpx.js?cid=1565&action=100&segment=Impulse_segment_"+str(group)+"&m=1\"></script>")
+
     def conversion(self,info):
-	self.write("conversion")
-	self.write(info)
-	self.write("<br />")
+	try:
+		campaignId=int(self.get_argument('id'))
+		cookiename="c"+campaignId
+		clickinfo=self.get_cookie(cookiename,default=False)
+		if clickinfo!=False:
+			args=json.loads(base64.b64decode(clickinfo))
+			log={"message":"CONV",
+			"campaignId":str(args['campaignId']),
+			"bannerId":str(args['bannerId']),
+			"exchange":str(args['exchange']),
+			"domain":str(args['domain']),
+			"timestamp":datetime.date.today().strftime("%Y-%d-%m %H:%M:%S"),
+			}
+			message=json.dumps(log)
+			connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
+			channel = connection.channel()
+			channel.queue_declare(queue='conversions')
+			channel.basic_publish(exchange='',routing_key='conversions',body=message)
+			connection.close()
 
 def refreshCache():
     global adIndex
