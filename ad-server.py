@@ -40,7 +40,7 @@ class MainHandler(tornado.web.RequestHandler):
 	ip = self.request.remote_ip
 
 	if adIndex.has_key('c:'+str(args['cid'])+':b:'+str(args['bid'])):
-		url = adIndex['c:'+str(args['cid'])+':b:'+str(args['bid'])]
+		url = adIndex['c:'+str(args['cid'])+':b:'+str(args['bid'])+':url']
 	else : 
 		url = adIndex['c:'+str(args['cid'])+':url']
 
