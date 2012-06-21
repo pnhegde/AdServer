@@ -129,7 +129,7 @@ class MainHandler(tornado.web.RequestHandler):
 			imp_uid=str(uuid.uuid4())
 			self.set_cookie("imp_uid",imp_uid)
 			self.write("document.write(\"<img width='1' height='1' src='http://r.openx.net/set?pid=532485e2-f94e-8ad2-384a-01d3e0cdd7f1&rtb="+imp_uid+"'>\");\n")
-			self.write("document.write(\"<script src='http://rtbidder.impulse01.com/pixel.php?group="+int(group)+"'></script>\");\n")
+			self.write("document.write(\"<script src='http://rtbidder.impulse01.com/pixel.php?group="+str(group)+"'></script>\");\n")
 			self.write("document.write(\"<img width='1' height='1' src='http://rtbidder.impulse01.com/sync.php'>\");\n")
 			self.flush()
 			message_newuser=json.dumps({"message":"NEWUSER",
@@ -149,7 +149,7 @@ class MainHandler(tornado.web.RequestHandler):
 			sy=self.get_cookie("sy",default=False)
 			if sy==False:
 				self.write("document.write(\"<img width='1' height='1' src='http://r.openx.net/set?pid=532485e2-f94e-8ad2-384a-01d3e0cdd7f1&rtb="+imp_uid+"'>\");\n")
-				self.write("document.write(\"<script src='http://rtbidder.impulse01.com/pixel.php?group="+int(group)+"'></script>\");\n")
+				self.write("document.write(\"<script src='http://rtbidder.impulse01.com/pixel.php?group="+str(group)+"'></script>\");\n")
 				self.write("document.write(\"<img width='1' height='1' src='http://rtbidder.impulse01.com/sync.php'>\");\n")
 			self.flush()
 			message_adduser=json.dumps({"message":"ADDUSER",
