@@ -64,6 +64,8 @@ class MainHandler(tornado.web.RequestHandler):
 		code.replace("[CLICK_MACRO]",urllib.urlencode(finalUrl))
 		self.write(code)
 
+	self.flush()
+
         log={"message":"IMP",
         "campaignId":str(args['cid']),
         "bannerId":str(args['bid']),
