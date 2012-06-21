@@ -45,9 +45,9 @@ class MainHandler(tornado.web.RequestHandler):
 		url = adIndex['c:'+str(args['cid'])+':url']
 
 	if len(third_party_url)==0:
-		finalUrl="http://http://ec2-175-41-181-197.ap-southeast-1.compute.amazonaws.com//click?"+params[0]+"|||"+url
+		finalUrl="http://ec2-175-41-181-197.ap-southeast-1.compute.amazonaws.com/click?"+params[0]+"|||"+url
 	else:
-		finalUrl=third_party_url+urllib.quote("http://http://ec2-175-41-181-197.ap-southeast-1.compute.amazonaws.com//click?"+params[0]+"|||"+url)
+		finalUrl=third_party_url+urllib.quote("http://ec2-175-41-181-197.ap-southeast-1.compute.amazonaws.com/click?"+params[0]+"|||"+url)
 
 	creativeUrl = adIndex['b:'+str(args['bid'])+':url']
 	bannerData = adIndex['b:'+str(args['bid'])+':data']
