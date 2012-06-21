@@ -129,7 +129,7 @@ class MainHandler(tornado.web.RequestHandler):
 			self.set_cookie("imp_uid","stuff")
 		else :
 			print "existed"
-		
+	except:
 
     def sync(self,info):
 	self.write("sync")
