@@ -90,6 +90,17 @@ class MainHandler(tornado.web.RequestHandler):
 	args = json.loads(base64.b64decode(params[0]))
 	redirect_url = params[1]
 
+        cookieval=base64.b64encode(json.dumps({"campaignId":str(args['cid']),
+        "bannerId":str(args['bid']),
+        "exchange":str(args['e']),
+        "domain":str(args['d']),
+	"timestamp":datetime.date.today().strftime("%Y-%d-%m %H:%M:%S")
+        }))
+	cookiename = 'c'+str(args['cid'])
+	self.set_cookie(cookiename,cookieval,expires_days=30)
+	self.set_header("Location",redirect_url)
+	self.flush()
+
         log={"message":"CLK",
         "campaignId":str(args['cid']),
         "bannerId":str(args['bid']),
@@ -105,16 +116,6 @@ class MainHandler(tornado.web.RequestHandler):
 	channel.queue_declare(queue='clicks')
 	channel.basic_publish(exchange='',routing_key='clicks',body=message)
 	connection.close()
-
-        cookieval=base64.b64encode(json.dumps({"campaignId":str(args['cid']),
-        "bannerId":str(args['bid']),
-        "exchange":str(args['e']),
-        "domain":str(args['d']),
-	"timestamp":datetime.date.today().strftime("%Y-%d-%m %H:%M:%S")
-        }))
-	cookiename = 'c'+str(args['cid'])
-	set_cookie(cookiename,cookieval,expires_days=30)
-	set_header("Location",redirect_url)
 
     def segment(self,info):
 	self.write("segment")
