@@ -122,7 +122,7 @@ class MainHandler(tornado.web.RequestHandler):
 	connection.close()
 
     def segment(self,info):
-	try:
+	if 1=1:
 		group=int(self.get_argument('group'))
 		imp_uid=self.get_cookie("imp_uid",default=False)
 		if imp_uid==False:
@@ -161,8 +161,6 @@ class MainHandler(tornado.web.RequestHandler):
 			channel.queue_declare(queue='audience')
 			channel.basic_publish(exchange='',routing_key='audience',body=message_adduser)
 			connection.close()
-	except:
-		print "segment exception"
 
     def sync(self,info):
 	self.write("sync")
