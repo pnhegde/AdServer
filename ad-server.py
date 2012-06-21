@@ -14,6 +14,7 @@ import datetime
 import base64
 import pika
 import urllib
+import uuid
 from urlparse import urlparse
 from tornado.web import asynchronous
 import tornado.options
@@ -125,10 +126,41 @@ class MainHandler(tornado.web.RequestHandler):
 		group=int(self.get_argument('group'))
 		imp_uid=self.get_cookie("imp_uid",default=False)
 		if imp_uid==False:
-			print "didnt exist"
-			self.set_cookie("imp_uid","stuff")
+			imp_uid=str(uuid.uuid4())
+			self.set_cookie("imp_uid",imp_uid)
+			self.write("document.write(\"<img width='1' height='1' src='http://r.openx.net/set?pid=532485e2-f94e-8ad2-384a-01d3e0cdd7f1&rtb="+imp_uid+"'>\");\n")
+			self.write("document.write(\"<script src='http://rtbidder.impulse01.com/pixel.php?group="+group+"'></script>\");\n")
+			self.write("document.write(\"<img width='1' height='1' src='http://rtbidder.impulse01.com/sync.php'>\");\n")
+			self.flush()
+			message_newuser=json.dumps({"message":"NEWUSER",
+			"imp_uid":imp_uid
+			})
+			message_adduser=json.dumps({"message":"ADDUSER",
+			"imp_uid":imp_uid,
+			"group":group
+			})
+			connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
+			channel = connection.channel()
+			channel.queue_declare(queue='audience')
+			channel.basic_publish(exchange='',routing_key='audience',body=message_newuser)
+			channel.basic_publish(exchange='',routing_key='audience',body=message_adduser)
+			connection.close()
 		else :
-			print "existed"
+			sy=self.get_cookie("sy",default=False)
+			if sy==False:
+				self.write("document.write(\"<img width='1' height='1' src='http://r.openx.net/set?pid=532485e2-f94e-8ad2-384a-01d3e0cdd7f1&rtb="+imp_uid+"'>\");\n")
+				self.write("document.write(\"<script src='http://rtbidder.impulse01.com/pixel.php?group="+group+"'></script>\");\n")
+				self.write("document.write(\"<img width='1' height='1' src='http://rtbidder.impulse01.com/sync.php'>\");\n")
+			self.flush()
+			message_adduser=json.dumps({"message":"ADDUSER",
+			"imp_uid":imp_uid,
+			"group":group
+			})
+			connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
+			channel = connection.channel()
+			channel.queue_declare(queue='audience')
+			channel.basic_publish(exchange='',routing_key='audience',body=message_adduser)
+			connection.close()
 	except:
 		print "segment exception"
 
