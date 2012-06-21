@@ -106,7 +106,7 @@ class MainHandler(tornado.web.RequestHandler):
 	channel.basic_publish(exchange='',routing_key='clicks',body=message)
 	connection.close()
 
-        cookieval=b64.b64encode(json.dumps({"campaignId":str(args['cid']),
+        cookieval=base64.b64encode(json.dumps({"campaignId":str(args['cid']),
         "bannerId":str(args['bid']),
         "exchange":str(args['e']),
         "domain":str(args['d']),
