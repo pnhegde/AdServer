@@ -45,8 +45,8 @@ class MainHandler(tornado.web.RequestHandler):
 	else:
 		finalUrl=third_party_url+urllib.urlencode("http://rtbidder.impulse01.com/click?params="+params[0]+"&redirect="+url)
 
-	creativeUrl = adIndex['b:'+args['bid']+':url']
-	bannerData = adIndex['b:'+args['bid']+':data']
+	creativeUrl = adIndex['b:'+str(args['bid'])+':url']
+	bannerData = adIndex['b:'+str(args['bid'])+':data']
 
 	if bannerData[0]==1:
 		self.write('<a href="'+finalUrl+'" target="_blank"><img src="http://d3pim9r6015lw5.cloudfront.net'+creativeUrl+'" width="'+bannerData[1]+'" height="'+bannerData[2]+'" ></a>')
@@ -56,15 +56,15 @@ class MainHandler(tornado.web.RequestHandler):
 
 	if bannerData[0]==3:
 		finalUrl=third_party_url+urllib.urlencode("http://rtbidder.impulse01.com/click?params="+params[0]+"&redirect=")
-		code=adIndex['b:'+args['bid']+':code']
+		code=adIndex['b:'+str(args['bid'])+':code']
 		code.replace("[CLICK_MACRO]",urllib.urlencode(finalUrl))
 		self.write(code)
 
         log={"message":"IMP",
-        "campaignId":args['cid'],
-        "bannerId":args['bid'],
-        "exchange":args['e'],
-        "domain":args['d'],
+        "campaignId":str(args['cid']),
+        "bannerId":str(args['bid']),
+        "exchange":str(args['e']),
+        "domain":str(args['d']),
 	"price":enc_price,
 	"timestamp":datetime.date.today().strftime("%Y-%d-%m %H:%M:%S"),
 	"clickUrl":finalUrl,
