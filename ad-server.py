@@ -38,7 +38,7 @@ class MainHandler(tornado.web.RequestHandler):
 	if adIndex.has_key('c:'+str(args['cid'])+':b:'+str(args['bid'])):
 		url = adIndex['c:'+str(args['cid'])+':b:'+str(args['bid'])]
 	else : 
-		url = adIndex['c:'+str(args['cid'])]
+		url = adIndex['c:'+str(args['cid'])+':url']
 
 	if len(third_party_url)==0:
 		finalUrl="http://rtbidder.impulse01.com/click?params="+params[0]+"&redirect="+url
