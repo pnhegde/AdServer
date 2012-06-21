@@ -35,7 +35,6 @@ class MainHandler(tornado.web.RequestHandler):
     def serve(self,info):
 	params = info.split("|||")
 	args = json.loads(base64.b64decode(params[0]))
-        args = args.replace("-","+").replace("_","/")
 	enc_price = params[1]
 	third_party_url = params[2]
 	ip = self.request.remote_ip
