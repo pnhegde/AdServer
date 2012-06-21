@@ -79,7 +79,7 @@ class MainHandler(tornado.web.RequestHandler):
 
 	message=json.dumps(log)
 
-	#Push this impression to rabbitMQ for logging
+	#Push this impression to rabbitMQk for logging
 	connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
 	channel = connection.channel()
 	channel.queue_declare(queue='imps')
