@@ -208,7 +208,7 @@ class MainHandler(tornado.web.RequestHandler):
 		print "conversion exception"
 
     def healthcheck(self,info):
-	print "i am ok"
+	self.write("i am ok")
 
 def refreshCache():
     global adIndex
