@@ -79,7 +79,7 @@ class MainHandler(tornado.web.RequestHandler):
         "exchange":args['e'],
         "domain":args['d'],
 	"price":enc_price,
-	"timestamp_GMT":datetime.date.today().strftime("%Y-%d-%m %H:%M:%S"),
+	"timestamp_GMT":datetime.datetime.now().strftime("%Y-%d-%m %H:%M:%S"),
 	"clickUrl":finalUrl,
 	"ip":ip
         }
@@ -98,7 +98,7 @@ class MainHandler(tornado.web.RequestHandler):
         "bannerId":args['bid'],
         "exchange":args['e'],
         "domain":args['d'],
-	"timestamp_GMT":datetime.date.today().strftime("%Y-%d-%m %H:%M:%S")
+	"timestamp_GMT":datetime.datetime.now().strftime("%Y-%d-%m %H:%M:%S")
         }))
 	cookiename = 'c'+str(args['cid'])
 	self.set_cookie(cookiename,cookieval,expires_days=30)
@@ -109,8 +109,8 @@ class MainHandler(tornado.web.RequestHandler):
         "bannerId":args['bid'],
         "exchange":args['e'],
         "domain":args['d'],
-	"timestamp_GMT":datetime.date.today().strftime("%Y-%d-%m %H:%M:%S"),
-	"clickUrl":redirect_url,
+	"timestamp_GMT":datetime.datetime.now().strftime("%Y-%d-%m %H:%M:%S"),
+	"clickUrl":redirect_url
         }
 	message=json.dumps(log)
 
@@ -178,7 +178,7 @@ class MainHandler(tornado.web.RequestHandler):
 			"bannerId":args['bannerId'],
 			"exchange":args['exchange'],
 			"domain":args['domain'],
-			"timestamp_GMT":datetime.date.today().strftime("%Y-%d-%m %H:%M:%S"),
+			"timestamp_GMT":datetime.datetime.now().strftime("%Y-%d-%m %H:%M:%S")
 			})
 			self.sendtorabbit('conversions',message)
 	except:
