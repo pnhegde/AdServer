@@ -42,7 +42,8 @@ class MainHandler(tornado.web.RequestHandler):
 	params = info.split("|||")
 	args = json.loads(base64.b64decode(params[0]))
 	enc_price = params[1]
-	third_party_url = params[2]
+	random = params[2]
+	third_party_url = params[3]
 	ip = self.request.remote_ip
 
 	if adIndex.has_key('c:'+str(args['cid'])+':b:'+str(args['bid'])+':url'):
@@ -73,10 +74,10 @@ class MainHandler(tornado.web.RequestHandler):
 	self.flush()
 
         log={"message":"IMP",
-        "campaignId":str(args['cid']),
-        "bannerId":str(args['bid']),
-        "exchange":str(args['e']),
-        "domain":str(args['d']),
+        "campaignId":args['cid'],
+        "bannerId":args['bid'],
+        "exchange":args['e'],
+        "domain":args['d'],
 	"price":enc_price,
 	"timestamp":datetime.date.today().strftime("%Y-%d-%m %H:%M:%S"),
 	"clickUrl":finalUrl,
@@ -100,9 +101,9 @@ class MainHandler(tornado.web.RequestHandler):
 	redirect_url = params[1]
 
         cookieval=base64.b64encode(json.dumps({"campaignId":str(args['cid']),
-        "bannerId":str(args['bid']),
-        "exchange":str(args['e']),
-        "domain":str(args['d']),
+        "bannerId":args['bid'],
+        "exchange":args['e'],
+        "domain":args['d'],
 	"timestamp":datetime.date.today().strftime("%Y-%d-%m %H:%M:%S")
         }))
 	cookiename = 'c'+str(args['cid'])
@@ -111,10 +112,10 @@ class MainHandler(tornado.web.RequestHandler):
 	self.flush()
 
         log={"message":"CLK",
-        "campaignId":str(args['cid']),
-        "bannerId":str(args['bid']),
-        "exchange":str(args['e']),
-        "domain":str(args['d']),
+        "campaignId":args['cid'],
+        "bannerId":args['bid'],
+        "exchange":args['e'],
+        "domain":args['d'],
 	"timestamp":datetime.date.today().strftime("%Y-%d-%m %H:%M:%S"),
 	"clickUrl":redirect_url,
         }
@@ -192,10 +193,10 @@ class MainHandler(tornado.web.RequestHandler):
 		if clickinfo!=False:
 			args=json.loads(base64.b64decode(clickinfo))
 			log={"message":"CONV",
-			"campaignId":str(args['campaignId']),
-			"bannerId":str(args['bannerId']),
-			"exchange":str(args['exchange']),
-			"domain":str(args['domain']),
+			"campaignId":args['campaignId'],
+			"bannerId":args['bannerId'],
+			"exchange":args['exchange'],
+			"domain":args['domain'],
 			"timestamp":datetime.date.today().strftime("%Y-%d-%m %H:%M:%S"),
 			}
 			message=json.dumps(log)
