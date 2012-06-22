@@ -178,6 +178,8 @@ class MainHandler(tornado.web.RequestHandler):
 	try:
 		group=int(self.get_argument('group'))
 		self.write("<script src=\"http://i.simpli.fi/dpx.js?cid=1565&action=100&segment=Impulse_segment_"+str(group)+"&m=1\"></script>")
+	except:
+		print "pixel exception"
 
     def conversion(self,info):
 	try:
