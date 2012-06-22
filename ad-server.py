@@ -199,6 +199,8 @@ class MainHandler(tornado.web.RequestHandler):
 			channel.queue_declare(queue='conversions')
 			channel.basic_publish(exchange='',routing_key='conversions',body=message)
 			connection.close()
+	except:
+		print "conversion exception"
 
 def refreshCache():
     global adIndex
