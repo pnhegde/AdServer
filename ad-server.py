@@ -109,7 +109,6 @@ class MainHandler(tornado.web.RequestHandler):
 	cookiename = 'c'+str(args['cid'])
 	self.set_cookie(cookiename,cookieval,expires_days=30)
 	self.redirect(redirect_url)
-	self.flush()
 
         log={"message":"CLK",
         "campaignId":args['cid'],
