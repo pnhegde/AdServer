@@ -35,6 +35,8 @@ class MainHandler(tornado.web.RequestHandler):
 		self.pixel(self.request.query)
         if self.request.path=="/conv":
 		self.conversion(self.request.query)
+        if self.request.path=="/healthcheck":
+		self.healthcheck(self.request.query)
 
     def serve(self,info):
 	params = info.split("|||")
@@ -204,6 +206,9 @@ class MainHandler(tornado.web.RequestHandler):
 			connection.close()
 	except:
 		print "conversion exception"
+
+    def healthcheck(self,info):
+	print "i am ok"
 
 def refreshCache():
     global adIndex
