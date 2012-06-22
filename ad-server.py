@@ -84,7 +84,8 @@ class MainHandler(tornado.web.RequestHandler):
 	message=json.dumps(log)
 
 	#Push this impression to rabbitMQ for logging
-	connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
+	credentials = pika.PlainCredentials('guest', 'appyfizz')
+	connection = pika.BlockingConnection(pika.ConnectionParameters(credentials=credentials, host='localhost'))
 	channel = connection.channel()
 	channel.queue_declare(queue='imps')
 	channel.basic_publish(exchange='',routing_key='imps',body=message)
