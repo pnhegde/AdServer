@@ -87,13 +87,7 @@ class MainHandler(tornado.web.RequestHandler):
 	message=json.dumps(log)
 
 	#Push this impression to rabbitMQ for logging
-	credentials = pika.PlainCredentials('guest', 'appyfizz')
-	connection = pika.BlockingConnection(pika.ConnectionParameters(credentials=credentials, host='localhost'))
-	channel = connection.channel()
-	channel.queue_declare(queue='imps')
-	channel.basic_publish(exchange='',routing_key='imps',body=message)
-	connection.close()
-
+	self.sendtorabbit('imps',message)
 
     def click(self,info):
 	params = info.split("|||")
@@ -121,11 +115,7 @@ class MainHandler(tornado.web.RequestHandler):
 	message=json.dumps(log)
 
 	#Push this click to rabbitMQ for logging
-	connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
-	channel = connection.channel()
-	channel.queue_declare(queue='clicks')
-	channel.basic_publish(exchange='',routing_key='clicks',body=message)
-	connection.close()
+	self.sendtorabbit('clicks',message)
 
     def segment(self,info):
 	try:
@@ -145,12 +135,8 @@ class MainHandler(tornado.web.RequestHandler):
 			"imp_uid":imp_uid,
 			"group":group
 			})
-			connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
-			channel = connection.channel()
-			channel.queue_declare(queue='audience')
-			channel.basic_publish(exchange='',routing_key='audience',body=message_newuser)
-			channel.basic_publish(exchange='',routing_key='audience',body=message_adduser)
-			connection.close()
+			self.sendtorabbit('audience',message_newuser)
+			self.sendtorabbit('audience',message_adduser)
 		else :
 			sy=self.get_cookie("sy",default=False)
 			if sy==False:
@@ -162,11 +148,7 @@ class MainHandler(tornado.web.RequestHandler):
 			"imp_uid":imp_uid,
 			"group":group
 			})
-			connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
-			channel = connection.channel()
-			channel.queue_declare(queue='audience')
-			channel.basic_publish(exchange='',routing_key='audience',body=message_adduser)
-			connection.close()
+			self.sendtorabbit('audience',message_adduser)
 	except:
 		print "segment exception"
 
@@ -191,24 +173,27 @@ class MainHandler(tornado.web.RequestHandler):
 		clickinfo=self.get_cookie(cookiename,default=False)
 		if clickinfo!=False:
 			args=json.loads(base64.b64decode(clickinfo))
-			log={"message":"CONV",
+			message=json.dumps({"message":"CONV",
 			"campaignId":args['campaignId'],
 			"bannerId":args['bannerId'],
 			"exchange":args['exchange'],
 			"domain":args['domain'],
 			"timestamp":datetime.date.today().strftime("%Y-%d-%m %H:%M:%S"),
-			}
-			message=json.dumps(log)
-			connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
-			channel = connection.channel()
-			channel.queue_declare(queue='conversions')
-			channel.basic_publish(exchange='',routing_key='conversions',body=message)
-			connection.close()
+			})
+			self.sendtorabbit('conversions',message)
 	except:
 		print "conversion exception"
 
     def healthcheck(self,info):
 	self.write("i am ok")
+
+    def sendtorabbit(self,qname,msg):
+	credentials = pika.PlainCredentials('guest', 'appyfizz')
+	connection = pika.BlockingConnection(pika.ConnectionParameters(credentials=credentials, host='localhost'))
+	channel = connection.channel()
+	channel.queue_declare(queue=qname)
+	channel.basic_publish(exchange='',routing_key=qname,body=msg)
+	connection.close()
 
 def refreshCache():
     global adIndex
