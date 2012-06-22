@@ -88,7 +88,7 @@ class MainHandler(tornado.web.RequestHandler):
 	connection = pika.BlockingConnection(pika.ConnectionParameters(credentials=credentials, host='localhost'))
 	channel = connection.channel()
 	channel.queue_declare(queue='imps')
-	channel.basic_publish(exchange='impulse',routing_key='imps',body=message)
+	channel.basic_publish(exchange='',routing_key='imps',body=message)
 	connection.close()
 
 
