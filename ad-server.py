@@ -42,7 +42,7 @@ class MainHandler(tornado.web.RequestHandler):
 	params=self.get_argument('info')
         params1 = params.replace("-","+").replace("_","/")
 	params1 = params1 + '=' * (4 - len(params1) % 4)
-	args = json.loads(base64.urlsafe_b64decode(params1))
+	args = json.loads(base64.b64decode(params1))
 	enc_price = self.get_argument('p')
 	random = self.get_argument('r')
 
