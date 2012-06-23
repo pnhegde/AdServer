@@ -39,11 +39,15 @@ class MainHandler(tornado.web.RequestHandler):
 		self.healthcheck(self.request.query)
 
     def serve(self,info):
-	params = info.split("|||")
-	args = json.loads(base64.b64decode(params[0]))
-	enc_price = params[1]
-	random = params[2]
-	third_party_url = params[3]
+	params=self.getargument('info')
+        params1=params.replace("-","+").replace("_","/")
+	args = json.loads(base64.urlsafe_b64decode(params1 + '=' * (4 - len(params1) % 4)))
+	enc_price = self.getargument('p')
+	random = self.getargument('r')
+
+	#Here we assume that the third party URL being passed is not URL Escaped. Hence split by &red=
+	ta=self.request.query.split("&red=")
+	third_party_url = ta[1]
 	ip = self.request.remote_ip
 
 	if adIndex.has_key('c:'+str(args['cid'])+':b:'+str(args['bid'])+':url'):
@@ -52,9 +56,9 @@ class MainHandler(tornado.web.RequestHandler):
 		url = adIndex['c:'+str(args['cid'])+':url']
 
 	if len(third_party_url)==0:
-		finalUrl="http://rtbidder.impulse01.com/click?"+params[0]+"|||"+url
+		finalUrl="http://rtbidder.impulse01.com/click?info="+params+"&red="+url
 	else:
-		finalUrl=third_party_url+urllib.quote("http://rtbidder.impulse01.com/click?"+params[0]+"|||"+url)
+		finalUrl=third_party_url+urllib.quote("http://rtbidder.impulse01.com/click?info="+params+"&red="+url)
 
 	creativeUrl = adIndex['b:'+str(args['bid'])+':url']
 	bannerData = adIndex['b:'+str(args['bid'])+':data']
@@ -66,14 +70,14 @@ class MainHandler(tornado.web.RequestHandler):
 		self.write('<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0" width="'+str(bannerData[1])+'" height="'+str(bannerData[2])+'"  id="mymoviename"><param name="movie" value="http://d3pim9r6015lw5.cloudfront.net'+creativeUrl+'?clickTag='+urllib.quote(finalUrl)+'" /> <param name="quality" value="high" /> <param name="bgcolor" value="#ffffff" /> <embed src="http://d3pim9r6015lw5.cloudfront.net'+creativeUrl+'?clickTag='+urllib.quote(finalUrl)+'" quality="high" bgcolor="#ffffff"width="'+str(bannerData[1])+'" height="'+str(bannerData[2])+'" name="mymoviename" align="" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer"> </embed> </object>')
 
 	if bannerData[0]==3:
-		finalUrl=third_party_url+urllib.urlencode("http://rtbidder.impulse01.com/click?params="+params[0]+"&redirect=")
+		finalUrl=third_party_url+urllib.urlencode("http://rtbidder.impulse01.com/click?info="+params+"&red=")
 		code=adIndex['b:'+str(args['bid'])+':code']
 		code.replace("[CLICK_MACRO]",urllib.urlencode(finalUrl))
 		self.write(code)
 
 	self.flush()
 
-        log={"message":"IMP",
+        message=json.dumps({"message":"IMP",
         "campaignId":args['cid'],
         "bannerId":args['bid'],
         "exchange":args['e'],
@@ -82,19 +86,19 @@ class MainHandler(tornado.web.RequestHandler):
 	"timestamp_GMT":datetime.datetime.now().strftime("%Y-%d-%m %H:%M:%S"),
 	"clickUrl":finalUrl,
 	"ip":ip
-        }
-
-	message=json.dumps(log)
-
+        })
 	#Push this impression to rabbitMQ for logging
 	self.sendtorabbit('imps',message)
 
     def click(self,info):
-	params = info.split("|||")
-	args = json.loads(base64.b64decode(params[0]))
-	redirect_url = params[1]
+	params = self.getargument('info')
+        params1=params.replace("-","+").replace("_","/")
+	args = json.loads(base64.urlsafe_b64decode(params1 + '=' * (4 - len(params1) % 4)))
 
-        cookieval=base64.b64encode(json.dumps({"campaignId":str(args['cid']),
+	ta=self.request.query.split("&red=")
+	redirect_url = ta[1]
+
+        cookieval=base64.b64encode(json.dumps({"campaignId":args['cid'],
         "bannerId":args['bid'],
         "exchange":args['e'],
         "domain":args['d'],
