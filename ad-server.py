@@ -39,11 +39,11 @@ class MainHandler(tornado.web.RequestHandler):
 		self.healthcheck(self.request.query)
 
     def serve(self,info):
-	params=self.getargument('info')
+	params=self.get_argument('info')
         params1=params.replace("-","+").replace("_","/")
 	args = json.loads(base64.urlsafe_b64decode(params1 + '=' * (4 - len(params1) % 4)))
-	enc_price = self.getargument('p')
-	random = self.getargument('r')
+	enc_price = self.get_argument('p')
+	random = self.get_argument('r')
 
 	#Here we assume that the third party URL being passed is not URL Escaped. Hence split by &red=
 	ta=self.request.query.split("&red=")
@@ -91,7 +91,7 @@ class MainHandler(tornado.web.RequestHandler):
 	self.sendtorabbit('imps',message)
 
     def click(self,info):
-	params = self.getargument('info')
+	params = self.get_argument('info')
         params1=params.replace("-","+").replace("_","/")
 	args = json.loads(base64.urlsafe_b64decode(params1 + '=' * (4 - len(params1) % 4)))
 
