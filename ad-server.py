@@ -93,8 +93,9 @@ class MainHandler(tornado.web.RequestHandler):
 
     def click(self,info):
 	params = self.get_argument('info')
-        params1=params.replace("-","+").replace("_","/")
-	args = json.loads(base64.urlsafe_b64decode(params1 + '=' * (4 - len(params1) % 4)))
+        params1 = params.replace("-","+").replace("_","/")
+	params1 = params1 + '=' * (4 - len(params1) % 4)
+	args = json.loads(base64.b64decode(params1))
 
 	ta=self.request.query.split("&red=")
 	redirect_url = ta[1]
