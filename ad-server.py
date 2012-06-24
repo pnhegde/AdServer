@@ -141,25 +141,25 @@ class MainHandler(tornado.web.RequestHandler):
                 self.flush()
                 message_newuser=json.dumps({"message":"NEWUSER",
                 "imp_uid":imp_uid
-            })
-            message_adduser=json.dumps({"message":"ADDUSER",
+                })
+                message_adduser=json.dumps({"message":"ADDUSER",
                 "imp_uid":imp_uid,
                 "group":group
-            })
-            self.sendtorabbit('audience',message_newuser)
-            self.sendtorabbit('audience',message_adduser)
-        else :
-            sy=self.get_cookie("sy",default=False)
-            if sy==False:
-                self.write("document.write(\"<img width='1' height='1' src='http://r.openx.net/set?pid=532485e2-f94e-8ad2-384a-01d3e0cdd7f1&rtb="+imp_uid+"'>\");\n")
-                self.write("document.write(\"<script src='http://ec2-175-41-181-197.ap-southeast-1.compute.amazonaws.com/pixel?group="+str(group)+"'></script>\");\n")
-                self.write("document.write(\"<img width='1' height='1' src='http://ec2-175-41-181-197.ap-southeast-1.compute.amazonaws.com/sync'>\");\n")
-            self.flush()
-            message_adduser=json.dumps({"message":"ADDUSER",
+                })
+                self.sendtorabbit('audience',message_newuser)
+                self.sendtorabbit('audience',message_adduser)
+            else :
+                sy=self.get_cookie("sy",default=False)
+                if sy==False:
+                    self.write("document.write(\"<img width='1' height='1' src='http://r.openx.net/set?pid=532485e2-f94e-8ad2-384a-01d3e0cdd7f1&rtb="+imp_uid+"'>\");\n")
+                    self.write("document.write(\"<script src='http://ec2-175-41-181-197.ap-southeast-1.compute.amazonaws.com/pixel?group="+str(group)+"'></script>\");\n")
+                    self.write("document.write(\"<img width='1' height='1' src='http://ec2-175-41-181-197.ap-southeast-1.compute.amazonaws.com/sync'>\");\n")
+                self.flush()
+                message_adduser=json.dumps({"message":"ADDUSER",
                 "imp_uid":imp_uid,
                 "group":group
-            })
-            self.sendtorabbit('audience',message_adduser)
+                })
+                self.sendtorabbit('audience',message_adduser)
         except:
             print "segment exception"
 
