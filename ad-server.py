@@ -208,7 +208,7 @@ class MainHandler(tornado.web.RequestHandler):
 
     def sendtoredis(self,qname,msg):
         r = redis.StrictRedis(host='localhost', port=6379, db=0)
-        r.publish(qname,msg)
+        r.lpush('globalqueue',msg)
 
 def refreshCache():
     global adIndex
