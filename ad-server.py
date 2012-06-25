@@ -173,7 +173,7 @@ class MainHandler(tornado.web.RequestHandler):
     def pixel(self,info):
         try:
             group=int(self.get_argument('group'))
-            self.write("document.write(\"<script src='http://i.simpli.fi/dpx.js?cid=1565&action=100&segment=Impulse_segment_"+str(group)+"&m=1\"></script>);\n)
+            self.write("document.write(\"<script src='http://i.simpli.fi/dpx.js?cid=1565&action=100&segment=Impulse_segment_"+str(group)+"&m=1'></script>\");\n")
         except:
             print "pixel exception"
 
@@ -191,6 +191,9 @@ class MainHandler(tornado.web.RequestHandler):
                     "domain":args['domain'],
                     "timestamp_GMT":datetime.datetime.now().strftime("%Y-%d-%m %H:%M:%S")
                 })
+                if adIndex.has_key('c:'+campaignId+':sifi'):
+                    sifiid=adIndex['c:'+campaignId+':sifi']
+                    self.write("document.write(\"<script src='http://i.simpli.fi/dpx.js?cid=1565&conversion=0&campaign_id="+sifiid+"&m=1&c=0'></script>\");\n")
                 self.sendtoredis('conversions',message)
         except:
             print "conversion exception"
