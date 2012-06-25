@@ -79,6 +79,11 @@ class MainHandler(tornado.web.RequestHandler):
             code.replace("[CLICK_MACRO]",urllib.urlencode(finalUrl))
             self.write(code)
 
+        if args.has_key('piggyback'):
+            pb=args['piggyback']
+            for pb as p:
+                self.write("<script src=\"http://rtbidder.impulse01.com/segment?group="+p+"\"></script>")
+
         self.flush()
 
         message=json.dumps({"message":"IMP",
@@ -91,8 +96,6 @@ class MainHandler(tornado.web.RequestHandler):
             "clickUrl":finalUrl,
             "ip":ip
         })
-        #Push this impression to rabbitMQ for logging
-        #self.sendtorabbit('imps',message)
         self.sendtoredis('imps',message)
 
     def click(self,info):
@@ -123,9 +126,6 @@ class MainHandler(tornado.web.RequestHandler):
             "clickUrl":redirect_url
         }
         message=json.dumps(log)
-
-        #Push this click to rabbitMQ for logging
-        #self.sendtorabbit('clicks',message)
         self.sendtoredis('clicks',message)
 
     def segment(self,info):
