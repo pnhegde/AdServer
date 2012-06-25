@@ -81,7 +81,7 @@ class MainHandler(tornado.web.RequestHandler):
 
         if args.has_key('piggyback'):
             pb=args['piggyback']
-            for pb as p:
+            for p in pb:
                 self.write("<script src=\"http://rtbidder.impulse01.com/segment?group="+p+"\"></script>")
 
         self.flush()
