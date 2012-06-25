@@ -146,8 +146,8 @@ class MainHandler(tornado.web.RequestHandler):
                 "imp_uid":imp_uid,
                 "group":group
                 })
-                self.sendtorabbit('audience',message_newuser)
-                self.sendtorabbit('audience',message_adduser)
+                self.sendtoredis('audience',message_newuser)
+                self.sendtoredis('audience',message_adduser)
             else :
                 sy=self.get_cookie("sy",default=False)
                 if sy==False:
@@ -159,7 +159,7 @@ class MainHandler(tornado.web.RequestHandler):
                 "imp_uid":imp_uid,
                 "group":group
                 })
-                self.sendtorabbit('audience',message_adduser)
+                self.sendtoredis('audience',message_adduser)
         except:
             print "segment exception"
 
@@ -173,7 +173,7 @@ class MainHandler(tornado.web.RequestHandler):
     def pixel(self,info):
         try:
             group=int(self.get_argument('group'))
-            self.write("<script src=\"http://i.simpli.fi/dpx.js?cid=1565&action=100&segment=Impulse_segment_"+str(group)+"&m=1\"></script>")
+            self.write("document.write(\"<script src='http://i.simpli.fi/dpx.js?cid=1565&action=100&segment=Impulse_segment_"+str(group)+"&m=1\"></script>);\n)
         except:
             print "pixel exception"
 
@@ -191,7 +191,7 @@ class MainHandler(tornado.web.RequestHandler):
                     "domain":args['domain'],
                     "timestamp_GMT":datetime.datetime.now().strftime("%Y-%d-%m %H:%M:%S")
                 })
-                self.sendtorabbit('conversions',message)
+                self.sendtoredis('conversions',message)
         except:
             print "conversion exception"
 
