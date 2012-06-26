@@ -163,7 +163,7 @@ class MainHandler(tornado.web.RequestHandler):
                                                   "group":group,
                                                   "attribute":attributeJson
                                                   })
-                    self.sendtoredis('audience', message_addattr)
+                    self.sendtoredis1('audience', message_addattr)
                 
             else :
                 sy = self.get_cookie("sy",default=False)
@@ -184,7 +184,7 @@ class MainHandler(tornado.web.RequestHandler):
                                                   "group":group,
                                                   "attribute":attributeJson
                                                   })
-                    self.sendtoredis('audience', message_addattr)
+                    self.sendtoredis1('audience', message_addattr)
         except:
             print "segment exception"
 
@@ -237,6 +237,10 @@ class MainHandler(tornado.web.RequestHandler):
     def sendtoredis(self,qname,msg):
         r = redis.StrictRedis(host='localhost', port=6379, db=0)
         r.lpush('globalqueue',msg)
+
+    def sendtoredis1(self,qname,msg):
+        r = redis.StrictRedis(host='localhost', port=6379, db=0)
+        r.lpush('attr',msg)
 
 def refreshCache():
     global adIndex
