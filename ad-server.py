@@ -161,7 +161,7 @@ class MainHandler(tornado.web.RequestHandler):
                                               "imp_uid":imp_uid
                                               "group":group
                                               })
-                    self.sendtoredis('audience',message_adduser)    
+                    self.sendtoredis('audience', message_adduser)    
                 
             else :
                 sy = self.get_cookie("sy",default=False)
