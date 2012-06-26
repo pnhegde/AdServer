@@ -137,7 +137,7 @@ class MainHandler(tornado.web.RequestHandler):
             imp_uid=self.get_cookie("imp_uid",default=False)
             if imp_uid==False:
                 imp_uid=str(uuid.uuid4())
-                self.set_cookie("imp_uid",imp_uid)
+                self.set_cookie("imp_uid",imp_uid,expires_days=365)
                 self.write("document.write(\"<img width='1' height='1' src='http://r.openx.net/set?pid=532485e2-f94e-8ad2-384a-01d3e0cdd7f1&rtb="+imp_uid+"'>\");\n")
                 self.write("document.write(\"<script src='http://rtbidder.impulse01.com/pixel?group="+str(group)+"'></script>\");\n")
                 self.write("document.write(\"<img width='1' height='1' src='http://rtbidder.impulse01.com/sync'>\");\n")
