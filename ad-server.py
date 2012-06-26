@@ -134,9 +134,9 @@ class MainHandler(tornado.web.RequestHandler):
     def segment(self,info):
         try:
             group = int(self.get_argument('group'))
-            queryString = self.request.query
-            attributes = dict([part.split('=') for part in queryString.split('&')])
-            del attributes['group']
+            queryString = self.request.query    #get query string of the url
+            attributes = dict([part.split('=') for part in queryString.split('&')]) #Convert the query to dictonary
+            del attributes['group'] #Remove the 1st argument 'group'
                                             
             imp_uid = self.get_cookie("imp_uid",default=False)
             if imp_uid == False:
@@ -146,24 +146,22 @@ class MainHandler(tornado.web.RequestHandler):
                 self.write("document.write(\"<script src='http://rtbidder.impulse01.com/pixel?group="+str(group)+"'></script>\");\n")
                 self.write("document.write(\"<img width='1' height='1' src='http://rtbidder.impulse01.com/sync'>\");\n")
                 self.flush()
-                message_newuser = json.dumps({"message":"NEWUSER",
-                                              "imp_uid":imp_uid
-                                              })
-                message_adduser = json.dumps({"message":"ADDUSER",
-                                              "imp_uid":imp_uid,
-                                              "group":group
-                                              })
-                self.sendtoredis('audience',message_newuser)
-                self.sendtoredis('audience',message_adduser)
                 
+                #Check the url query for attributes
                 if len(attributes) != 0 :
-                    attributeJson = json.dumps(attributes)
-                    message_addattr = json.dumps({"message":"ADDATTR",
+                    attributeJson = json.dumps(attributes) #Convert dictonary to JSON before sending it to redis
+                    message_newuserattr = json.dumps({"message":"NEWUSERATTR",
                                                   "imp_uid":imp_uid,
                                                   "group":group,
                                                   "attribute":attributeJson
                                                   })
-                    self.sendtoredis('audience', message_addattr)
+                    self.sendtoredis('audience', message_newuserattr)
+                else : 
+                    message_newuser = json.dumps({"message":"NEWUSER",
+                                              "imp_uid":imp_uid
+                                              "group":group
+                                              })
+                                self.sendtoredis('audience',message_newuser)    
                 
             else :
                 sy = self.get_cookie("sy",default=False)
@@ -172,19 +170,21 @@ class MainHandler(tornado.web.RequestHandler):
                     self.write("document.write(\"<script src='http://rtbidder.impulse01.com/pixel?group="+str(group)+"'></script>\");\n")
                     self.write("document.write(\"<img width='1' height='1' src='http://rtbidder.impulse01.com/sync'>\");\n")
                 self.flush()
-                message_adduser = json.dumps({"message":"ADDUSER",
-                "imp_uid":imp_uid,
-                "group":group
-                })
-                self.sendtoredis('audience',message_adduser)
+                
                 if len(attributes) != 0 :
                     attributeJson = json.dumps(attributes)
-                    message_addattr = json.dumps({"message":"ADDATTR",
+                    message_olduserattr = json.dumps({"message":"OLDUSERATTR",
                                                   "imp_uid":imp_uid,
                                                   "group":group,
                                                   "attribute":attributeJson
                                                   })
-                    self.sendtoredis('audience', message_addattr)
+                    self.sendtoredis('audience', message_olduserattr)
+                else :
+                    message_olduser = json.dumps({"message":"OLDUSER",
+                                                  "imp_uid":imp_uid,
+                                                  "group":group
+                                                  })
+                    self.sendtoredis('audience',message_olduser)
         except:
             print "segment exception"
 
