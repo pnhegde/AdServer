@@ -150,18 +150,18 @@ class MainHandler(tornado.web.RequestHandler):
                 #Check the url query for attributes
                 if len(attributes) != 0 :
                     attributeJson = json.dumps(attributes) #Convert dictonary to JSON before sending it to redis
-                    message_newuserattr = json.dumps({"message":"NEWUSERATTR",
+                    message_adduserattr = json.dumps({"message":"ADDUSERATTR",
                                                   "imp_uid":imp_uid,
                                                   "group":group,
                                                   "attribute":attributeJson
                                                   })
-                    self.sendtoredis('audience', message_newuserattr)
+                    self.sendtoredis('audience', message_adduserattr)
                 else : 
-                    message_newuser = json.dumps({"message":"NEWUSER",
+                    message_adduser = json.dumps({"message":"ADDUSER",
                                               "imp_uid":imp_uid
                                               "group":group
                                               })
-                                self.sendtoredis('audience',message_newuser)    
+                    self.sendtoredis('audience',message_adduser)    
                 
             else :
                 sy = self.get_cookie("sy",default=False)
@@ -173,18 +173,18 @@ class MainHandler(tornado.web.RequestHandler):
                 
                 if len(attributes) != 0 :
                     attributeJson = json.dumps(attributes)
-                    message_olduserattr = json.dumps({"message":"OLDUSERATTR",
+                    message_adduserattr = json.dumps({"message":"ADDUSERATTR",
                                                   "imp_uid":imp_uid,
                                                   "group":group,
                                                   "attribute":attributeJson
                                                   })
-                    self.sendtoredis('audience', message_olduserattr)
+                    self.sendtoredis('audience', message_adduserattr)
                 else :
-                    message_olduser = json.dumps({"message":"OLDUSER",
+                    message_adduser = json.dumps({"message":"ADDUSER",
                                                   "imp_uid":imp_uid,
                                                   "group":group
                                                   })
-                    self.sendtoredis('audience',message_olduser)
+                    self.sendtoredis('audience',message_adduser)
         except:
             print "segment exception"
 
