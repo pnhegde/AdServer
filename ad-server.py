@@ -38,6 +38,8 @@ class MainHandler(tornado.web.RequestHandler):
             self.pixel(self.request.query)
         if self.request.path == "/conv":
             self.conversion(self.request.query)
+        if self.request.path == "/attribute":
+            self.attribute(self.request.query)
         if self.request.path == "/healthcheck":
             self.healthcheck(self.request.query)
 
@@ -200,6 +202,9 @@ class MainHandler(tornado.web.RequestHandler):
                 self.sendtoredis('conversions',message)
         except:
             print "conversion exception"
+
+    def attribute(self,info):
+        self.write("i am ok")
 
     def healthcheck(self,info):
         self.write("i am ok")
