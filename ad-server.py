@@ -38,8 +38,6 @@ class MainHandler(tornado.web.RequestHandler):
             self.pixel(self.request.query)
         if self.request.path == "/conv":
             self.conversion(self.request.query)
-        if self.request.path == "/attribute":
-            self.attribute(self.request.query)
         if self.request.path == "/healthcheck":
             self.healthcheck(self.request.query)
 
@@ -135,36 +133,58 @@ class MainHandler(tornado.web.RequestHandler):
 
     def segment(self,info):
         try:
-            group=int(self.get_argument('group'))
-            imp_uid=self.get_cookie("imp_uid",default=False)
-            if imp_uid==False:
-                imp_uid=str(uuid.uuid4())
+            group = int(self.get_argument('group'))
+            queryString = self.request.query
+            attributes = dict([part.split('=') for part in queryString.split('&')])
+            del attributes['group']
+                                            
+            imp_uid = self.get_cookie("imp_uid",default=False)
+            if imp_uid == False:
+                imp_uid = str(uuid.uuid4())
                 self.set_cookie("imp_uid",imp_uid,expires_days=365)
                 self.write("document.write(\"<img width='1' height='1' src='http://r.openx.net/set?pid=532485e2-f94e-8ad2-384a-01d3e0cdd7f1&rtb="+imp_uid+"'>\");\n")
                 self.write("document.write(\"<script src='http://rtbidder.impulse01.com/pixel?group="+str(group)+"'></script>\");\n")
                 self.write("document.write(\"<img width='1' height='1' src='http://rtbidder.impulse01.com/sync'>\");\n")
                 self.flush()
-                message_newuser=json.dumps({"message":"NEWUSER",
-                "imp_uid":imp_uid
-                })
-                message_adduser=json.dumps({"message":"ADDUSER",
-                "imp_uid":imp_uid,
-                "group":group
-                })
+                message_newuser = json.dumps({"message":"NEWUSER",
+                                              "imp_uid":imp_uid
+                                              })
+                message_adduser = json.dumps({"message":"ADDUSER",
+                                              "imp_uid":imp_uid,
+                                              "group":group
+                                              })
                 self.sendtoredis('audience',message_newuser)
                 self.sendtoredis('audience',message_adduser)
+                
+                if len(attributes) != 0 :
+                    attributeJson = json.dumps(attributes)
+                    message_addattr = json.dumps({"message":"ADDATTR",
+                                                  "imp_uid":imp_uid,
+                                                  "group":group,
+                                                  "attribute":attributeJson
+                                                  })
+                    self.sendtoredis('audience', message_addattr)
+                
             else :
-                sy=self.get_cookie("sy",default=False)
-                if sy==False:
+                sy = self.get_cookie("sy",default=False)
+                if sy == False:
                     self.write("document.write(\"<img width='1' height='1' src='http://r.openx.net/set?pid=532485e2-f94e-8ad2-384a-01d3e0cdd7f1&rtb="+imp_uid+"'>\");\n")
                     self.write("document.write(\"<script src='http://rtbidder.impulse01.com/pixel?group="+str(group)+"'></script>\");\n")
                     self.write("document.write(\"<img width='1' height='1' src='http://rtbidder.impulse01.com/sync'>\");\n")
                 self.flush()
-                message_adduser=json.dumps({"message":"ADDUSER",
+                message_adduser = json.dumps({"message":"ADDUSER",
                 "imp_uid":imp_uid,
                 "group":group
                 })
                 self.sendtoredis('audience',message_adduser)
+                if len(attributes) != 0 :
+                    attributeJson = json.dumps(attributes)
+                    message_addattr = json.dumps({"message":"ADDATTR",
+                                                  "imp_uid":imp_uid,
+                                                  "group":group,
+                                                  "attribute":attributeJson
+                                                  })
+                    self.sendtoredis('audience', message_addattr)
         except:
             print "segment exception"
 
@@ -202,9 +222,6 @@ class MainHandler(tornado.web.RequestHandler):
                 self.sendtoredis('conversions',message)
         except:
             print "conversion exception"
-
-    def attribute(self,info):
-        self.write("i am ok")
 
     def healthcheck(self,info):
         self.write("i am ok")
