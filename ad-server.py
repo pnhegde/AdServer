@@ -205,7 +205,7 @@ class MainHandler(tornado.web.RequestHandler):
     def conversion(self,info):
         try:
             campaignId=int(self.get_argument('id'))
-            cookiename="c"+campaignId
+            cookiename="c"+str(campaignId)
             clickinfo=self.get_cookie(cookiename,default=False)
             if clickinfo!=False:
                 args=json.loads(base64.b64decode(clickinfo))
