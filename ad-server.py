@@ -220,8 +220,10 @@ class MainHandler(tornado.web.RequestHandler):
                     sifiid=adIndex['c:'+campaignId+':sifi']
                     self.write("document.write(\"<script src='http://i.simpli.fi/dpx.js?cid=1565&conversion=0&campaign_id="+sifiid+"&m=1&c=0'></script>\");\n")
                 self.sendtoredis('conversions',message)
+
             if campaignId==115:
                 self.write("document.write(\"<script src='http://i.simpli.fi/dpx.js?cid=1565&conversion=10&campaign_id=8683&m=1'></script>\");\n")
+		print "stuff"
 
         except:
             print "conversion exception"
