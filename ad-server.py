@@ -36,7 +36,7 @@ class MainHandler(tornado.web.RequestHandler):
             self.sync(self.request.query)
         if self.request.path == "/pixel":
             self.pixel(self.request.query)
-        if self.request.path == "/conv":
+        if self.request.path == "/conversion":
             self.conversion(self.request.query)
         if self.request.path == "/healthcheck":
             self.healthcheck(self.request.query)
