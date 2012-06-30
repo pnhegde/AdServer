@@ -215,9 +215,9 @@ class MainHandler(tornado.web.RequestHandler):
                     "domain":args['domain'],
                     "timestamp_GMT":datetime.datetime.now().strftime("%Y-%d-%m %H:%M:%S")
                 })
-                if adIndex.has_key('c:'+campaignId+':sifi'):
-                    sifiid=adIndex['c:'+campaignId+':sifi']
-                    self.write("document.write(\"<script src='http://i.simpli.fi/dpx.js?cid=1565&conversion=0&campaign_id="+sifiid+"&m=1&c=0'></script>\");\n")
+                if adIndex.has_key('c:'+str(campaignId)+':sifi'):
+                    sifiid=adIndex['c:'+str(campaignId)+':sifi']
+                    self.write("document.write(\"<script src='http://i.simpli.fi/dpx.js?cid=1565&conversion=0&campaign_id="+str(sifiid)+"&m=1&c=0'></script>\");\n")
                 self.sendtoredis('conversions',message)
 
             if campaignId==115:
