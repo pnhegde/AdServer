@@ -203,6 +203,7 @@ class MainHandler(tornado.web.RequestHandler):
             print "pixel exception"
 
     def conversion(self,info):
+        try:
             campaignId=int(self.get_argument('id'))
             cookiename="c"+str(campaignId)
             clickinfo=self.get_cookie(cookiename,default=False)
@@ -223,6 +224,8 @@ class MainHandler(tornado.web.RequestHandler):
             if campaignId==115:
                 self.write("document.write(\"<script src='http://i.simpli.fi/dpx.js?cid=1565&conversion=10&campaign_id=8683&m=1'></script>\");\n")
 		print "stuff"
+        except:
+            print "conversion exception"
 
     def healthcheck(self,info):
         self.write("i am ok")
