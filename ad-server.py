@@ -226,7 +226,7 @@ class MainHandler(tornado.web.RequestHandler):
 		print "stuff"
 
         except:
-            print "conversion exception"
+            print "conv exception:", sys.exc_info()[0]
 
     def healthcheck(self,info):
         self.write("i am ok")
