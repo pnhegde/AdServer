@@ -158,7 +158,7 @@ class MainHandler(tornado.web.RequestHandler):
                     self.sendtoredis('audience', message_adduserattr)
                 else : 
                     message_adduser = json.dumps({"message":"ADDUSER",
-                                              "imp_uid":imp_uid
+                                              "imp_uid":imp_uid,
                                               "group":group
                                               })
                     self.sendtoredis('audience', message_adduser)    
