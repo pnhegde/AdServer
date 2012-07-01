@@ -1,15 +1,16 @@
-#ADSERVER Request Format
+# ADSERVER Request Format
 # IMPRESSION - http://rtbidder.impulse01.com/serve?{Base64-Encoded-Params}|||{Encrypted-Price}|||{Third-Party-Redirect-Url}
 # CLICK - http://rtbidder.impulse01.com/click?{Base64-Encoded-Params}|||{Redirect-Url}
 # SEGMENT - http://rtbidder.impulse01.com/segment?group={GroupId}
 
 import random
-import time  
+import time
 import hashlib
 import re
 import json
 import datetime
 import base64
+import sys
 
 import pika
 import urllib
@@ -186,7 +187,7 @@ class MainHandler(tornado.web.RequestHandler):
                                                   })
                     self.sendtoredis('audience',message_adduser)
         except:
-            print "segment exception"
+            print "segment exception",sys.exc_info()
 
     def sync(self,info):
         print "sync request"
@@ -200,7 +201,7 @@ class MainHandler(tornado.web.RequestHandler):
             group=int(self.get_argument('group'))
             self.write("document.write(\"<script src='http://i.simpli.fi/dpx.js?cid=1565&action=100&segment=Impulse_segment_"+str(group)+"&m=1'></script>\");\n")
         except:
-            print "pixel exception"
+            print "pixel exception",sys.exc_info()
 
     def conversion(self,info):
         try:
@@ -225,7 +226,7 @@ class MainHandler(tornado.web.RequestHandler):
                 self.write("document.write(\"<script src='http://i.simpli.fi/dpx.js?cid=1565&conversion=10&campaign_id=8683&m=1'></script>\");\n")
 		print "stuff"
         except:
-            print "conversion exception"
+            print "conversion exception",sys.exc_info()
 
     def healthcheck(self,info):
         self.write("i am ok")
