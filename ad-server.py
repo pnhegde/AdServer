@@ -88,6 +88,9 @@ class MainHandler(tornado.web.RequestHandler):
         if args['cid']==113:
             self.write("<script src=\"http://rtbidder.impulse01.com/segment?group=21\"></script>")
 
+        if args['cid']==118:
+            self.write("<script src=\"http://rtbidder.impulse01.com/segment?group=27\"></script>")
+
         self.flush()
 
         message=json.dumps({"message":"IMP",
