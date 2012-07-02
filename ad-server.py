@@ -43,6 +43,7 @@ class MainHandler(tornado.web.RequestHandler):
             self.healthcheck(self.request.query)
 
     def serve(self,info):
+        print self.request.headers.get('Referer')
         params = self.get_argument('info')
         newParams = params.replace("-","+").replace("_","/")
         newParams = newParams + '=' * (4 - len(newParams) % 4)
