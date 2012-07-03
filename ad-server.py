@@ -168,10 +168,10 @@ class MainHandler(tornado.web.RequestHandler):
                     self.sendtoredis('audience', message_adduser)    
                 
             else :
+                self.write("document.write(\"<script src='http://rtbidder.impulse01.com/pixel?group="+str(group)+"'></script>\");\n")
                 sy = self.get_cookie("sy",default=False)
                 if sy == False:
                     self.write("document.write(\"<img width='1' height='1' src='http://r.openx.net/set?pid=532485e2-f94e-8ad2-384a-01d3e0cdd7f1&rtb="+imp_uid+"'>\");\n")
-                    self.write("document.write(\"<script src='http://rtbidder.impulse01.com/pixel?group="+str(group)+"'></script>\");\n")
                     self.write("document.write(\"<img width='1' height='1' src='http://rtbidder.impulse01.com/sync'>\");\n")
                 self.flush()
                 
@@ -193,7 +193,6 @@ class MainHandler(tornado.web.RequestHandler):
             print "segment exception",sys.exc_info()
 
     def sync(self,info):
-        print "sync request"
         self.set_cookie("sy","yes",expires_days=30)
         self.set_header("Content-type","image/gif")
         #NOTE - This is the binary of a 1x1 gif pixel in base64 encoded form
