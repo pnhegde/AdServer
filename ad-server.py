@@ -89,7 +89,7 @@ class MainHandler(tornado.web.RequestHandler):
             self.write("<script src=\"http://rtbidder.impulse01.com/segment?group=21\"></script>")
 
         if args['cid']==118:
-            self.write("<script src=\"http://rtbidder.impulse01.com/segment?group=27\"></script>")
+            self.write("<script src=\"http://rtbidder.impulse01.com/segment?group=31\"></script>")
 
         self.flush()
 
