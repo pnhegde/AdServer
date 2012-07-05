@@ -90,6 +90,7 @@ class MainHandler(tornado.web.RequestHandler):
 
         if args['cid']==118:
             self.write("<script src=\"http://rtbidder.impulse01.com/segment?group=31\"></script>")
+            self.write("<img src=\"http://tags.rtbidder.net/track?sid=4ff52deb8bc06f11e4ca9ed1\">")
 
         self.flush()
 
