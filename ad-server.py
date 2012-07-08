@@ -19,6 +19,7 @@ import tornado.ioloop
 import tornado.web
 import tornado.httpclient
 import tornado.gen
+import tornadoredis
 import redis
 
 from urlparse import urlparse
@@ -242,10 +243,15 @@ class MainHandler(tornado.web.RequestHandler):
         channel.queue_declare(queue=qname)
         channel.basic_publish(exchange='',routing_key=qname,body=msg)
         connection.close()
-
+    
+    @tornado.web.anyschronous
+    @tornado.gen.engine
     def sendtoredis(self,qname,msg):
-        r = redis.StrictRedis(host='localhost', port=6379, db=0)
-        r.lpush('globalqueue',msg)
+        #r = redis.StrictRedis(host='localhost', port=6379, db=0)
+        trdb = tornadoredis.Client()
+        trdb.connect()
+        yeild tornado.gen.Task( trdb.lpush, 'globalqueue', msg )
+        #r.lpush('globalqueue',msg)
 
 @tornado.web.asynchronous
 @tornado.gen.engine    
