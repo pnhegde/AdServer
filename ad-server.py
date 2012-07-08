@@ -244,7 +244,7 @@ class MainHandler(tornado.web.RequestHandler):
         channel.basic_publish(exchange='',routing_key=qname,body=msg)
         connection.close()
     
-    @tornado.web.anyschronous
+    @tornado.web.asynchronous
     @tornado.gen.engine
     def sendtoredis(self,qname,msg):
         #r = redis.StrictRedis(host='localhost', port=6379, db=0)
