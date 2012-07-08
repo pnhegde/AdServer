@@ -252,19 +252,16 @@ class MainHandler(tornado.web.RequestHandler):
         trdb.connect()
         yield tornado.gen.Task( trdb.lpush, 'globalqueue', msg )
         #r.lpush('globalqueue',msg)
-
-@tornado.web.asynchronous
-@tornado.gen.engine    
-def refreshCache():
+    
+def refreshCache():   
     global adIndex
-    http_client = tornado.httpclient.AsyncHTTPClient()
+    http_client = tornado.httpclient.HTTPClient()
     try:
-	response = yield tornado.gen.Task(client.fetch, "http://user.impulse01.com/ad-index.php")
+        response = http_client.fetch("http://user.impulse01.com/ad-index.php")
         invertedIndex=json.loads(response.body)
     except:
         invertedIndex=dict()
     adIndex=invertedIndex
-    self.finish()
     
 
 define("port", default=8888, help="run on the given port", type=int)
