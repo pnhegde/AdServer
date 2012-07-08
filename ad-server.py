@@ -250,7 +250,7 @@ class MainHandler(tornado.web.RequestHandler):
         #r = redis.StrictRedis(host='localhost', port=6379, db=0)
         trdb = tornadoredis.Client()
         trdb.connect()
-        yeild tornado.gen.Task( trdb.lpush, 'globalqueue', msg )
+        yield tornado.gen.Task( trdb.lpush, 'globalqueue', msg )
         #r.lpush('globalqueue',msg)
 
 @tornado.web.asynchronous
