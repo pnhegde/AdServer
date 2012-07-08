@@ -18,6 +18,7 @@ import uuid
 import tornado.ioloop
 import tornado.web
 import tornado.httpclient
+import tornado.gen
 import redis
 
 from urlparse import urlparse
@@ -246,15 +247,18 @@ class MainHandler(tornado.web.RequestHandler):
         r = redis.StrictRedis(host='localhost', port=6379, db=0)
         r.lpush('globalqueue',msg)
 
+@tornado.web.asynchronous
+@tornado.gen.engine    
 def refreshCache():
     global adIndex
-    http_client = tornado.httpclient.HTTPClient()
+    http_client = tornado.httpclient.AsyncHTTPClient()
     try:
-        response = http_client.fetch("http://user.impulse01.com/ad-index.php")
+	response = yield tornado.gen.Task(client.fetch, "http://user.impulse01.com/ad-index.php")
         invertedIndex=json.loads(response.body)
     except:
         invertedIndex=dict()
     adIndex=invertedIndex
+    self.finish()
     
 
 define("port", default=8888, help="run on the given port", type=int)
