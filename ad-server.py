@@ -199,7 +199,7 @@ class MainHandler(tornado.web.RequestHandler):
         self.set_cookie("sy","yes",expires_days=30)
         self.set_header("Content-Type","image/gif")
         #NOTE - This is the binary of a 1x1 gif pixel in base64 encoded form
-        self.write(base64.b64decode("R0lGODlhAQABAIAAAP///wAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw=="))
+        self.write(base64.b64decode("R0lGODlhAQABAIAAAP///////yH+EUNyZWF0ZWQgd2l0aCBHSU1QACwAAAAAAQABAAACAkQBADs="))
 
     def pixel(self,info):
         try:
