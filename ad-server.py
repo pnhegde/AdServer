@@ -197,7 +197,7 @@ class MainHandler(tornado.web.RequestHandler):
 
     def sync(self,info):
         self.set_cookie("sy","yes",expires_days=30)
-        self.set_header("Content-type","image/gif")
+        self.set_header("Content-Type","image/gif")
         #NOTE - This is the binary of a 1x1 gif pixel in base64 encoded form
         self.write(base64.b64decode("R0lGODlhAQABAIAAAP///wAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw=="))
 
@@ -238,7 +238,7 @@ class MainHandler(tornado.web.RequestHandler):
         
     def google_match(self,info):
         #NOTE - This is the binary of a 1x1 gif pixel in base64 encoded form
-        self.set_header("Content-type","image/gif")
+        self.set_header("Content-Type","image/gif")
         self.write(base64.b64decode("R0lGODlhAQABAIAAAP///wAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw=="))
         
     def sendtorabbit(self,qname,msg):
