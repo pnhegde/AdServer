@@ -238,7 +238,7 @@ class MainHandler(tornado.web.RequestHandler):
         
     def google_match(self,info):
         #NOTE - This is the binary of a 1x1 gif pixel in base64 encoded form
-        self.set_header("Content-Type","image/gif")
+        self.content_type='image/gif'
         self.write(base64.b64decode("R0lGODlhAQABAIAAAP///wAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw=="))
         
     def sendtorabbit(self,qname,msg):
