@@ -41,7 +41,9 @@ class MainHandler(tornado.web.RequestHandler):
             self.conversion(self.request.query)
         if self.request.path == "/healthcheck":
             self.healthcheck(self.request.query)
-
+        if self.request.path == "/google_match":
+            self.google_match(self.request.query)
+            
     def serve(self,info):
         params = self.get_argument('info')
         newParams = params.replace("-","+").replace("_","/")
@@ -233,7 +235,11 @@ class MainHandler(tornado.web.RequestHandler):
 
     def healthcheck(self,info):
         self.write("i am ok")
-
+        
+    def google_match(self,info):
+        #NOTE - This is the binary of a 1x1 gif pixel in base64 encoded form
+        self.write(base64.b64decode("R0lGODlhAQABAIAAAP///wAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw=="))
+        
     def sendtorabbit(self,qname,msg):
         credentials = pika.PlainCredentials('guest', 'appyfizz')
         connection = pika.BlockingConnection(pika.ConnectionParameters(credentials=credentials, host='localhost'))
