@@ -291,6 +291,9 @@ application = tornado.web.Application([(r".*", MainHandler),])
 adIndex = dict()
 
 if __name__ == "__main__":
+    print "starting server name="+name
+    print "refreshing cache first time"
+    refreshCache()
     tornado.options.parse_command_line()
     application.listen(options.port)
     tornado.ioloop.PeriodicCallback(refreshCache, options.refreshCache).start()
