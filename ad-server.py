@@ -56,7 +56,7 @@ class MainHandler(tornado.web.RequestHandler):
         if args['bid']==0:
 	    banners = adIndex['banners:'+str(args['cid'])+':'+str(args['width'])+':'+str(args['height'])]
 	    print type(banners[0])
-	    randomBannerId = random.choice(banners)
+	    randomBannerId = choice(banners)
 	    args['bid']=randomBannerId
 	    params=base64.b64encode(json.dumps(args))
 	    params=params.replace("+","-").replace("/","_").replace("=","")
