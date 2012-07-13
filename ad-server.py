@@ -180,8 +180,8 @@ class MainHandler(tornado.web.RequestHandler):
                     self.sendtoredis('audience', message_adduser)    
                 
             else :
-                sy1 = self.get_cookie("sy1",default=False)
-                if sy1 == False:
+                sy2 = self.get_cookie("sy2",default=False)
+                if sy2 == False:
                     self.write("document.write(\"<img width='1' height='1' src='http://r.openx.net/set?pid=532485e2-f94e-8ad2-384a-01d3e0cdd7f1&rtb="+imp_uid+"'>\");\n")
                     self.write("document.write(\"<script src='http://rtbidder.impulse01.com/pixel?group="+str(group)+"'></script>\");\n")
                     self.write("document.write(\"<img width='1' height='1' src='http://rtbidder.impulse01.com/sync'>\");\n")
@@ -206,7 +206,7 @@ class MainHandler(tornado.web.RequestHandler):
             print "segment exception",sys.exc_info()
 
     def sync(self,info):
-        self.set_cookie("sy1","yes",expires_days=30)
+        self.set_cookie("sy2","yes",expires_days=30)
         self.set_header("Content-Type","image/gif")
         #NOTE - This is the binary of a 1x1 gif pixel in base64 encoded form
         self.write(base64.b64decode("R0lGODlhAQABAIAAAP///////yH+EUNyZWF0ZWQgd2l0aCBHSU1QACwAAAAAAQABAAACAkQBADs="))
@@ -253,11 +253,10 @@ class MainHandler(tornado.web.RequestHandler):
                               "imp_uid":imp_uid,
                               "google_gid":google_gid
                           })
-        self.sendtoredis('audience',message_googlematch)
-                    
+        self.sendtoredis('audience',message_googlematch)                    
         #NOTE - This is the binary of a 1x1 gif pixel in base64 encoded form
         self.set_header("Content-Type","image/gif")
-        self.write(base64.b64decode("R0lGODlhAQABAPcAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAEAAP8ALAAAAAABAAEAAAgEAP8FBAA7"))
+        self.write(base64.b64decode("R0lGODlhAQABAIAAAP///////yH+EUNyZWF0ZWQgd2l0aCBHSU1QACwAAAAAAQABAAACAkQBADs="))
         
     def sendtorabbit(self,qname,msg):
         credentials = pika.PlainCredentials('guest', 'appyfizz')
