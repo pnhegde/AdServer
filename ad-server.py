@@ -55,7 +55,7 @@ class MainHandler(tornado.web.RequestHandler):
         #No banner ID passed. This means this is a direct ad code. Whatever it is, decide the banner first and update the arguments.
         if args['bid']==0:
 	    banners = adIndex['banners:'+str(args['cid'])+':'+str(args['width'])+':'+str(args['height'])]
-	    print type(banners)
+	    print type(banners[0])
 	    randomBannerId = random.choice(banners)
 	    args['bid']=randomBannerId
 	    params=base64.b64encode(json.dumps(args))
