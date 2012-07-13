@@ -3,7 +3,7 @@
 # CLICK - http://rtbidder.impulse01.com/click?{Base64-Encoded-Params}|||{Redirect-Url}
 # SEGMENT - http://rtbidder.impulse01.com/segment?group={GroupId}
 
-import random
+from random import choice
 import time
 import hashlib
 import re
