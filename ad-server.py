@@ -243,6 +243,9 @@ class MainHandler(tornado.web.RequestHandler):
         except:
             print "conversion exception",sys.exc_info()
 
+    def convert(self,info)
+        print "convered"
+        
     def healthcheck(self,info):
         self.write("i am ok")
         
