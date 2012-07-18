@@ -23,9 +23,9 @@ class MainHandler(tornado.web.RequestHandler):
     def access(self):
         global timeout
         global logList
-        logMsg = self.get_argument('log')
+        logMsg = str(self.request.body)
         if len(logList) < 5000 : 
-            logList.append(str(logMsg))
+            logList.append(logMsg)
         elif len(logList) >= 5000 :
             try:
                 f = open(logFolder+'/'+str(uuid.uuid4()),'w')
@@ -48,7 +48,7 @@ class MainHandler(tornado.web.RequestHandler):
               
     def getFile(self):
         try:
-            fileName = str(self.get_argument('file'))
+            fileName = str(self.request.body)#str(self.get_argument('file'))
             if fileName:
                 fileContent = open(logFolder+'/'+fileName).read()
                 self.write(fileContent)
