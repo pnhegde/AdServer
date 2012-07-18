@@ -50,7 +50,7 @@ class MainHandler(tornado.web.RequestHandler):
         try:
             allFiles = [ f for f in listdir(logFolder) if isfile(join(logFolder,f)) ]
             if allFiles:
-                self.write(str(allFiles))
+                self.write(json.dumps({"FileList":allFiles}))
                 lf = open(loggerLog,'a')
                 lf.write(" \n log agent returned = "+ str(len(allFiles))+
                     " files at time = "+str(strftime("%Y-%m-%d %H:%M:%S", gmtime())))
@@ -108,7 +108,7 @@ def timeoutFunction():
 application = tornado.web.Application([(r".*", MainHandler),])
 logList = []
 logFolder = './LogFolder'
-loggerLog = './LogFolder/loggerLog.txt'
+loggerLog = './loggerLog.txt'
 timeout = False
 
 if not os.path.exists(logFolder):

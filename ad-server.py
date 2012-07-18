@@ -258,7 +258,7 @@ class MainHandler(tornado.web.RequestHandler):
                               "imp_uid":imp_uid,
                               "google_gid":google_gid
                           })
-        self.sentToLogAgent(message_googlematch)                    
+        self.sendToLogAgent(message_googlematch)                    
         #NOTE - This is the binary of a 1x1 gif pixel in base64 encoded form
         self.set_header("Content-Type","image/gif")
         self.write(base64.b64decode("R0lGODlhAQABAIAAAP///////yH+EUNyZWF0ZWQgd2l0aCBHSU1QACwAAAAAAQABAAACAkQBADs="))
