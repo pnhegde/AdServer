@@ -30,7 +30,8 @@ class MainHandler(tornado.web.RequestHandler):
         elif len(logList) >= 5000 :
             try:
                 f = open(logFolder+'/'+str(uuid.uuid4()),'w')
-                f.write(str(logList))
+                jsonData=json.dumps({"Messages":logList})
+                f.write(jsonData)
                 lf = open(loggerLog,'a')
                 lf.write("\n"+f.name+" successfully created at time = "+
                     str(strftime("%Y-%m-%d %H:%M:%S", gmtime())) + "It contains "+str(len(logList))+" log items.")
@@ -83,7 +84,8 @@ def timeoutFunction():
         try:
             if logList:
                 f = open(logFolder+'/'+str(uuid.uuid4()),'w')
-                f.write(str(logList))
+                jsonData=json.dumps({"Messages":logList})
+                f.write(jsonData)
                 lf = open(loggerLog,'a')
                 lf.write("\n Time out: "+f.name+" successfully created at time = "+
                     str(strftime("%Y-%m-%d %H:%M:%S", gmtime())) + "It contains "+str(len(logList))+" log items.")
