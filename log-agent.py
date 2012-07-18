@@ -59,10 +59,11 @@ class MainHandler(tornado.web.RequestHandler):
                 
         except:
             print "file open error"                
-    
+    #timeoutFunction()
+
 def timeoutFunction():
     global timeout
-    if timeout:
+      if timeout:
         try:
             f = open(logFolder+'/'+str(uuid.uuid4()),'w')
             if logList:
@@ -71,7 +72,7 @@ def timeoutFunction():
             else:
                 print "empty list"     
             logList = []
-            timeout = 0
+            timeout = False
             f.close()
         except:
             print "File create error in timeout"
@@ -83,7 +84,6 @@ logList = []
 logFolder = './LogFolder'
 timeout = False
 #timeoutFunction()
-define("refreshCache", default=20000, help="millisecond interval between cache refresh", type=int)
 
 if not os.path.exists(logFolder):
     try:
@@ -94,5 +94,5 @@ if not os.path.exists(logFolder):
 if __name__ == "__main__":
     tornado.options.parse_command_line()
     application.listen(9000)
-    tornado.ioloop.PeriodicCallback(timeoutFunction, options.refreshCache).start()
+    tornado.ioloop.PeriodicCallback(timeoutFunction, 60000).start()
     tornado.ioloop.IOLoop.instance().start()
