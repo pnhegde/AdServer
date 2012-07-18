@@ -9,6 +9,7 @@ import tornado.web
 from os import listdir
 from os.path import isfile, join
 from logging.config import fileConfig
+from time import gmtime, strftime
 
 class MainHandler(tornado.web.RequestHandler):
     
@@ -30,6 +31,10 @@ class MainHandler(tornado.web.RequestHandler):
             try:
                 f = open(logFolder+'/'+str(uuid.uuid4()),'w')
                 f.write(str(logList))
+                lf = open(loggerLog,'a')
+                lf.write("\n"+f.name+" successfully created at time = "+
+                    str(strftime("%Y-%m-%d %H:%M:%S", gmtime())) + "It contains "+str(len(logList))+" log items.")
+                lf.close()
                 logList = []
                 timeout = False
                 f.close()
@@ -42,6 +47,11 @@ class MainHandler(tornado.web.RequestHandler):
             allFiles = [ f for f in listdir(logFolder) if isfile(join(logFolder,f)) ]
             if allFiles:
                 self.write(str(allFiles))
+                lf = open(loggerLog,'a')
+                lf.write(" \n log agent returned = "+ str(len(allFiles))+
+                    " files at time = "+str(strftime("%Y-%m-%d %H:%M:%S", gmtime())))
+                lf.close()
+
         except Exception, e:
             print "List file error" 
             raise e
@@ -54,6 +64,10 @@ class MainHandler(tornado.web.RequestHandler):
                 self.write(fileContent)
                 try:
                     os.remove(logFolder+'/'+fileName)
+                    lf = open(loggerLog,'a')
+                    lf.write("\n"+fileName+" has been successfully  sent to report agent at time = "+
+                    str(strftime("%Y-%m-%d %H:%M:%S", gmtime()))+" and successfully deleted " )
+                    lf.close()
                 except Exception, e:
                     print "Cannot delete the file !"
                     raise e
@@ -70,6 +84,10 @@ def timeoutFunction():
             if logList:
                 f = open(logFolder+'/'+str(uuid.uuid4()),'w')
                 f.write(str(logList))
+                lf = open(loggerLog,'a')
+                lf.write("\n Time out: "+f.name+" successfully created at time = "+
+                    str(strftime("%Y-%m-%d %H:%M:%S", gmtime())) + "It contains "+str(len(logList))+" log items.")
+                lf.close()
                 f.close()
             else:
                 print "empty list"     
@@ -85,6 +103,7 @@ def timeoutFunction():
 application = tornado.web.Application([(r".*", MainHandler),])
 logList = []
 logFolder = './LogFolder'
+loggerLog = './LogFolder/loggerLog.txt'
 timeout = False
 
 if not os.path.exists(logFolder):
