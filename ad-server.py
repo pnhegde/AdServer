@@ -43,6 +43,8 @@ class MainHandler(tornado.web.RequestHandler):
             self.healthcheck(self.request.query)
         if self.request.path == "/google_match":
             self.google_match(self.request.query)
+        if self.request.path == "/vast_imp":
+            self.vast_imp(self.request.query)            
             
     def serve(self,info):
         params = self.get_argument('info')
@@ -260,18 +262,28 @@ class MainHandler(tornado.web.RequestHandler):
         #NOTE - This is the binary of a 1x1 gif pixel in base64 encoded form
         self.set_header("Content-Type","image/gif")
         self.write(base64.b64decode("R0lGODlhAQABAIAAAP///////yH+EUNyZWF0ZWQgd2l0aCBHSU1QACwAAAAAAQABAAACAkQBADs="))
-        
-    def sendtorabbit(self,qname,msg):
-        credentials = pika.PlainCredentials('guest', 'appyfizz')
-        connection = pika.BlockingConnection(pika.ConnectionParameters(credentials=credentials, host='localhost'))
-        channel = connection.channel()
-        channel.queue_declare(queue=qname)
-        channel.basic_publish(exchange='',routing_key=qname,body=msg)
-        connection.close()
+
+    def vast_imp(self,info):
+        params = self.get_argument('info')
+        newParams = params.replace("-","+").replace("_","/")
+        newParams = newParams + '=' * (4 - len(newParams) % 4)
+        args = json.loads(base64.b64decode(newParams))
+        message=json.dumps({"message":"IMP",
+            "campaignId":args['cid'],
+            "bannerId":args['bid'],
+            "exchange":args['e'],
+            "domain":args['d']
+            })
+        self.sendtoredis('audience',message)                    
+
 
     def sendtoredis(self,qname,msg):
         r = redis.StrictRedis(host='localhost', port=6379, db=0)
         r.lpush('globalqueue',msg)
+    
+    def sendToLogAgent(self,message):
+        http = tornado.httpclient.AsyncHTTPClient()
+        http.fetch('http://localhost:9000/access', body=message,callback=None)
 
 def refreshCache():
     global adIndex
