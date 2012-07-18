@@ -179,7 +179,7 @@ class MainHandler(tornado.web.RequestHandler):
                                               "imp_uid":imp_uid,
                                               "group":group
                                               })
-                    self.sendtoredis('audience', message_adduser)    
+                    self.sendToLogAgent(message_adduser)
                 
             else :
                 sy2 = self.get_cookie("sy2",default=False)
@@ -203,7 +203,7 @@ class MainHandler(tornado.web.RequestHandler):
                                                   "imp_uid":imp_uid,
                                                   "group":group
                                                   })
-                    self.sendtoredis('audience',message_adduser)
+                    self.sendToLogAgent(message_adduser)
         except:
             print "segment exception",sys.exc_info()
 
@@ -274,8 +274,7 @@ class MainHandler(tornado.web.RequestHandler):
             "exchange":args['e'],
             "domain":args['d']
             })
-        self.sendtoredis('audience',message)                    
-
+        self.sendtoredis('audience',message)
 
     def sendtoredis(self,qname,msg):
         r = redis.StrictRedis(host='localhost', port=6379, db=0)
