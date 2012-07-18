@@ -17,10 +17,12 @@ class MainHandler(tornado.web.RequestHandler):
     def post(self):
         if self.request.path == "/access":
             self.access()
+            
+    def get(self):
         if self.request.path == "/poll":
             self.poll()
         if self.request.path == "/getFile":
-            self.getFile()
+            self.getFile()      
     
     def access(self):
         global timeout
@@ -60,7 +62,7 @@ class MainHandler(tornado.web.RequestHandler):
               
     def getFile(self):
         try:
-            fileName = str(self.request.body)#str(self.get_argument('file'))
+            fileName = str(self.get_argument('file'))
             if fileName:
                 fileContent = open(logFolder+'/'+fileName).read()
                 self.write(fileContent)
