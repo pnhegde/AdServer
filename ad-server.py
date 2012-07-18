@@ -282,7 +282,7 @@ class MainHandler(tornado.web.RequestHandler):
     
     def sendToLogAgent(self,message):
         http = tornado.httpclient.AsyncHTTPClient()
-        http.fetch('http://localhost:9000/access', body=message,callback=None)
+        http.fetch('http://localhost:9000/access', method='POST',body=message,callback=None)
 
 def refreshCache():
     global adIndex
