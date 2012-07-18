@@ -116,7 +116,7 @@ class MainHandler(tornado.web.RequestHandler):
             "clickUrl":finalUrl,
             "ip":ip
         })
-        self.sendtoredis('imps',message)
+        self.sendToLogAgent(message)
 
     def click(self,info):
         params = self.get_argument('info')
@@ -146,7 +146,7 @@ class MainHandler(tornado.web.RequestHandler):
             "clickUrl":redirect_url
         }
         message=json.dumps(log)
-        self.sendtoredis('clicks',message)
+        self.sendToLogAgent(message)
 
     def segment(self,info):
         try:
@@ -173,7 +173,7 @@ class MainHandler(tornado.web.RequestHandler):
                                                   "group":group,
                                                   "attribute":attributeJson
                                                   })
-                    self.sendtoredis('audience', message_adduserattr)
+                    self.sendToLogAgent(message_adduserattr)
                 else : 
                     message_adduser = json.dumps({"message":"ADDUSER",
                                               "imp_uid":imp_uid,
@@ -197,7 +197,7 @@ class MainHandler(tornado.web.RequestHandler):
                                                   "group":group,
                                                   "attribute":attributeJson
                                                   })
-                    self.sendtoredis('audience', message_adduserattr)
+                    self.sendToLogAgent(message_adduserattr)
                 else :
                     message_adduser = json.dumps({"message":"ADDUSER",
                                                   "imp_uid":imp_uid,
@@ -237,7 +237,7 @@ class MainHandler(tornado.web.RequestHandler):
                 if adIndex.has_key('c:'+str(campaignId)+':sifi'):
                     sifiid=adIndex['c:'+str(campaignId)+':sifi']
                     self.write("document.write(\"<script src='http://i.simpli.fi/dpx.js?cid=1565&conversion=0&campaign_id="+str(sifiid)+"&m=1&c=0'></script>\");\n")
-                self.sendtoredis('conversions',message)
+                self.sendToLogAgent(message)
 
             if campaignId==115:
                 self.write("document.write(\"<script src='http://i.simpli.fi/dpx.js?cid=1565&conversion=10&campaign_id=8683&m=1'></script>\");\n")
@@ -258,7 +258,7 @@ class MainHandler(tornado.web.RequestHandler):
                               "imp_uid":imp_uid,
                               "google_gid":google_gid
                           })
-        self.sendtoredis('audience',message_googlematch)                    
+        self.sentToLogAgent(message_googlematch)                    
         #NOTE - This is the binary of a 1x1 gif pixel in base64 encoded form
         self.set_header("Content-Type","image/gif")
         self.write(base64.b64decode("R0lGODlhAQABAIAAAP///////yH+EUNyZWF0ZWQgd2l0aCBHSU1QACwAAAAAAQABAAACAkQBADs="))
@@ -274,7 +274,7 @@ class MainHandler(tornado.web.RequestHandler):
             "exchange":args['e'],
             "domain":args['d']
             })
-        self.sendtoredis('audience',message)
+        self.sendToLogAgent(message)
 
     def sendtoredis(self,qname,msg):
         r = redis.StrictRedis(host='localhost', port=6379, db=0)
