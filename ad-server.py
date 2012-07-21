@@ -97,13 +97,6 @@ class MainHandler(tornado.web.RequestHandler):
             for p in pb:
                 self.write("<script src=\"http://rtbidder.impulse01.com/segment?group="+str(p)+"\"></script>")
 
-        if args['cid']==113:
-            self.write("<script src=\"http://rtbidder.impulse01.com/segment?group=21\"></script>")
-
-        if args['cid']==118:
-            self.write("<script src=\"http://rtbidder.impulse01.com/segment?group=31\"></script>")
-            self.write("<img src=\"http://tags.rtbidder.net/track?sid=4ff52deb8bc06f11e4ca9ed1\">")
-
         imp_uid = self.get_cookie("imp_uid",default=False)
         if imp_uid == False:
 	    imp_uid = str(uuid.uuid4())
