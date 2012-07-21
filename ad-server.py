@@ -104,9 +104,15 @@ class MainHandler(tornado.web.RequestHandler):
             self.write("<script src=\"http://rtbidder.impulse01.com/segment?group=31\"></script>")
             self.write("<img src=\"http://tags.rtbidder.net/track?sid=4ff52deb8bc06f11e4ca9ed1\">")
 
+        imp_uid = self.get_cookie("imp_uid",default=False)
+        if imp_uid == False:
+	    imp_uid = str(uuid.uuid4())
+	    self.set_cookie("imp_uid",imp_uid,expires_days=365)
+	    
         self.flush()
 
         message=json.dumps({"message":"IMP",
+            "imp_uid":imp_uid,
             "campaignId":args['cid'],
             "bannerId":args['bid'],
             "exchange":args['e'],
