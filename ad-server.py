@@ -102,6 +102,11 @@ class MainHandler(tornado.web.RequestHandler):
 	    imp_uid = str(uuid.uuid4())
 	    self.set_cookie("imp_uid",imp_uid,expires_days=365)
 	    
+        self.set_header("Cache-Control","no-cache")
+        self.set_header("Pragma","no-cache")
+        self.set_header("Connection","close")
+        self.set_header("Server","ImpulseOne")
+        
         self.flush()
 
         message=json.dumps({"message":"IMP",
