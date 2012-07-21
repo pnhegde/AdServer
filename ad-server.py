@@ -277,10 +277,6 @@ class MainHandler(tornado.web.RequestHandler):
             "domain":args['d']
             })
         self.sendToLogAgent(message)
-
-    def sendtoredis(self,qname,msg):
-        r = redis.StrictRedis(host='localhost', port=6379, db=0)
-        r.lpush('globalqueue',msg)
     
     def sendToLogAgent(self,message):
         http = tornado.httpclient.AsyncHTTPClient()
