@@ -136,7 +136,10 @@ class MainHandler(tornado.web.RequestHandler):
         self.set_cookie(cookiename,cookieval,expires_days=30)
         self.redirect(redirect_url)
 
+        imp_uid = self.get_cookie("imp_uid",default=False)
+               
         log = {"message":"CLK",
+            "imp_uid":imp_uid,
             "campaignId":args['cid'],
             "bannerId":args['bid'],
             "exchange":args['e'],
