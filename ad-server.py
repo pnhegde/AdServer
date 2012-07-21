@@ -103,9 +103,9 @@ class MainHandler(tornado.web.RequestHandler):
         if imp_uid == False:
 	    imp_uid = str(uuid.uuid4())
 	    self.set_cookie("imp_uid",imp_uid,expires_days=365)
-	    self.write("document.write(\"<img width='1' height='1' src='http://r.openx.net/set?pid=532485e2-f94e-8ad2-384a-01d3e0cdd7f1&rtb="+imp_uid+"'>\");\n")
-            self.write("document.write(\"<img width='1' height='1' src='http://rtbidder.impulse01.com/sync'>\");\n")
-            self.write("document.write(\"<img width='1' height='1' src='http://cm.g.doubleclick.net/pixel?google_nid=ipm&google_cm'>\");\n")
+	    self.write("<img width='1' height='1' src='http://r.openx.net/set?pid=532485e2-f94e-8ad2-384a-01d3e0cdd7f1&rtb="+imp_uid+"'>\n")
+            self.write("<img width='1' height='1' src='http://rtbidder.impulse01.com/sync'>\n")
+            self.write("<img width='1' height='1' src='http://cm.g.doubleclick.net/pixel?google_nid=ipm&google_cm'>\n")
 
         #Set the view through cookie to indicate that this user has seen this ad impression.
         #View through cookies are in the form of i203 where 203= campaign ID
@@ -115,7 +115,7 @@ class MainHandler(tornado.web.RequestHandler):
             "d":args['d'],
             "timestamp_GMT":datetime.datetime.now().strftime("%Y-%d-%m %H:%M:%S")
         }))
-        cookiename = 'i'+str(args['cid'])
+        cookiename = 'v'+str(args['cid'])
         self.set_cookie(cookiename,cookieval,expires_days=30)
         
         self.set_header("Cache-Control","no-cache")
@@ -131,8 +131,6 @@ class MainHandler(tornado.web.RequestHandler):
             "domain":args['d'],
             "price":encrPrice,
             "timestamp_GMT":datetime.datetime.now().strftime("%Y-%d-%m %H:%M:%S"),
-            "clickUrl":finalUrl,
-            "ip":ip
         })
         self.sendToLogAgent(message)
 
@@ -164,7 +162,6 @@ class MainHandler(tornado.web.RequestHandler):
             "exchange":args['e'],
             "domain":args['d'],
             "timestamp_GMT":datetime.datetime.now().strftime("%Y-%d-%m %H:%M:%S"),
-            "clickUrl":redirect_url
         }
         message=json.dumps(log)
         self.sendToLogAgent(message)
