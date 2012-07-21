@@ -104,8 +104,6 @@ class MainHandler(tornado.web.RequestHandler):
 	    
         self.set_header("Cache-Control","no-cache")
         self.set_header("Pragma","no-cache")
-        self.set_header("Connection","close")
-        self.set_header("Server","ImpulseOne")
         
         self.flush()
 
