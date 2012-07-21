@@ -106,7 +106,7 @@ class MainHandler(tornado.web.RequestHandler):
 	    self.write("<img width='1' height='1' src='http://r.openx.net/set?pid=532485e2-f94e-8ad2-384a-01d3e0cdd7f1&rtb="+imp_uid+"'>\n")
             self.write("<img width='1' height='1' src='http://rtbidder.impulse01.com/sync'>\n")
             self.write("<img width='1' height='1' src='http://cm.g.doubleclick.net/pixel?google_nid=ipm&google_cm'>\n")
-        else
+        else:
             sy2 = self.get_cookie("sy2",default=False)
             if sy2 == False:
 		self.write("<img width='1' height='1' src='http://r.openx.net/set?pid=532485e2-f94e-8ad2-384a-01d3e0cdd7f1&rtb="+imp_uid+"'>\n")
