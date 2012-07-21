@@ -97,11 +97,27 @@ class MainHandler(tornado.web.RequestHandler):
             for p in pb:
                 self.write("<script src=\"http://rtbidder.impulse01.com/segment?group="+str(p)+"\"></script>")
 
+        #If imp_uid is not set, we are seeing the user for first time.
+        #Create new cookie imp_uid and also drop syncronization pixels in the browser
         imp_uid = self.get_cookie("imp_uid",default=False)
         if imp_uid == False:
 	    imp_uid = str(uuid.uuid4())
 	    self.set_cookie("imp_uid",imp_uid,expires_days=365)
-	    
+	    self.write("document.write(\"<img width='1' height='1' src='http://r.openx.net/set?pid=532485e2-f94e-8ad2-384a-01d3e0cdd7f1&rtb="+imp_uid+"'>\");\n")
+            self.write("document.write(\"<img width='1' height='1' src='http://rtbidder.impulse01.com/sync'>\");\n")
+            self.write("document.write(\"<img width='1' height='1' src='http://cm.g.doubleclick.net/pixel?google_nid=ipm&google_cm'>\");\n")
+
+        #Set the view through cookie to indicate that this user has seen this ad impression.
+        #View through cookies are in the form of i203 where 203= campaign ID
+        cookieval = base64.b64encode(json.dumps({"cid":args['cid'],
+            "bid":args['bid'],
+            "e":args['e'],
+            "d":args['d'],
+            "timestamp_GMT":datetime.datetime.now().strftime("%Y-%d-%m %H:%M:%S")
+        }))
+        cookiename = 'i'+str(args['cid'])
+        self.set_cookie(cookiename,cookieval,expires_days=30)
+        
         self.set_header("Cache-Control","no-cache")
         self.set_header("Pragma","no-cache")
         
@@ -129,10 +145,10 @@ class MainHandler(tornado.web.RequestHandler):
         ta=self.request.query.split("&red=")
         redirect_url = ta[1]
 
-        cookieval = base64.b64encode(json.dumps({"campaignId":args['cid'],
-            "bannerId":args['bid'],
-            "exchange":args['e'],
-            "domain":args['d'],
+        cookieval = base64.b64encode(json.dumps({"cid":args['cid'],
+            "bid":args['bid'],
+            "e":args['e'],
+            "d":args['d'],
             "timestamp_GMT":datetime.datetime.now().strftime("%Y-%d-%m %H:%M:%S")
         }))
         cookiename = 'c'+str(args['cid'])
