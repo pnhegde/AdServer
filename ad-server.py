@@ -106,6 +106,12 @@ class MainHandler(tornado.web.RequestHandler):
 	    self.write("<img width='1' height='1' src='http://r.openx.net/set?pid=532485e2-f94e-8ad2-384a-01d3e0cdd7f1&rtb="+imp_uid+"'>\n")
             self.write("<img width='1' height='1' src='http://rtbidder.impulse01.com/sync'>\n")
             self.write("<img width='1' height='1' src='http://cm.g.doubleclick.net/pixel?google_nid=ipm&google_cm'>\n")
+        else
+            sy2 = self.get_cookie("sy2",default=False)
+            if sy2 == False:
+		self.write("<img width='1' height='1' src='http://r.openx.net/set?pid=532485e2-f94e-8ad2-384a-01d3e0cdd7f1&rtb="+imp_uid+"'>\n")
+		self.write("<img width='1' height='1' src='http://rtbidder.impulse01.com/sync'>\n")
+		self.write("<img width='1' height='1' src='http://cm.g.doubleclick.net/pixel?google_nid=ipm&google_cm'>\n")
 
         #Set the view through cookie to indicate that this user has seen this ad impression.
         #View through cookies are in the form of i203 where 203= campaign ID
@@ -116,11 +122,16 @@ class MainHandler(tornado.web.RequestHandler):
             "timestamp_GMT":datetime.datetime.now().strftime("%Y-%d-%m %H:%M:%S")
         }))
         cookiename = 'v'+str(args['cid'])
-        self.set_cookie(cookiename,cookieval,expires_days=30)
+        if adIndex.has_key('vw:'+str(args['cid'])):
+            vw = adIndex['vw:'+str(args['cid'])]
+            if vw==0:
+	        vw=30
+        else : 
+            vw=30
+        self.set_cookie(cookiename,cookieval,expires_days=vw)
         
         self.set_header("Cache-Control","no-cache")
         self.set_header("Pragma","no-cache")
-        
         self.flush()
 
         message=json.dumps({"message":"IMP",
@@ -143,6 +154,7 @@ class MainHandler(tornado.web.RequestHandler):
         ta=self.request.query.split("&red=")
         redirect_url = ta[1]
 
+        #Set the click through cookie to indicate that the user clicked on this ad.
         cookieval = base64.b64encode(json.dumps({"cid":args['cid'],
             "bid":args['bid'],
             "e":args['e'],
@@ -150,9 +162,16 @@ class MainHandler(tornado.web.RequestHandler):
             "timestamp_GMT":datetime.datetime.now().strftime("%Y-%d-%m %H:%M:%S")
         }))
         cookiename = 'c'+str(args['cid'])
-        self.set_cookie(cookiename,cookieval,expires_days=30)
+        if adIndex.has_key('cw:'+str(args['cid'])):
+            cw = adIndex['cw:'+str(args['cid'])]
+            if cw==0:
+	        cw=30
+        else : 
+            cw=30        
+        self.set_cookie(cookiename,cookieval,expires_days=cw)
         self.redirect(redirect_url)
-
+	self.flush()
+        
         imp_uid = self.get_cookie("imp_uid",default=False)
                
         log = {"message":"CLK",
