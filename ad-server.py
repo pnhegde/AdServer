@@ -45,7 +45,9 @@ class MainHandler(tornado.web.RequestHandler):
         if self.request.path == "/google_match":
             self.google_match(self.request.query)
         if self.request.path == "/vast_imp":
-            self.vast_imp(self.request.query)            
+            self.vast_imp(self.request.query)    
+        if self.request.path == "/optout":
+            self.optout(self.request.query)  
             
     def serve(self,info):
         params = self.get_argument('info')
@@ -316,7 +318,7 @@ class MainHandler(tornado.web.RequestHandler):
             })
         self.sendToLogAgent(message)
         
-    def optout(self,info)
+    def optout(self,info):
         self.write("You have been opted out and we can no longer track you")
     
     def sendToLogAgent(self,message):
