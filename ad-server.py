@@ -319,6 +319,7 @@ class MainHandler(tornado.web.RequestHandler):
         self.sendToLogAgent(message)
         
     def optout(self,info):
+        self.clear_all_cookies()
         self.write("You have been opted out and we can no longer track you")
     
     def sendToLogAgent(self,message):
