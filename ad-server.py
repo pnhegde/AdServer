@@ -315,6 +315,9 @@ class MainHandler(tornado.web.RequestHandler):
             "domain":args['d']
             })
         self.sendToLogAgent(message)
+        
+    def optout(self,info)
+        self.write("You have been opted out and we can no longer track you")
     
     def sendToLogAgent(self,message):
         http = tornado.httpclient.AsyncHTTPClient()
