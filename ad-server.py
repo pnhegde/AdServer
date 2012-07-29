@@ -63,10 +63,10 @@ class MainHandler(tornado.web.RequestHandler):
 	    randomBannerId = choice(banners)
 	    args['bid']=randomBannerId
 	    
-	if !args.has_key['user_geo_state']:
+	if not args.has_key['user_geo_state']:
 	    args['user_geo_state']="NA"
 	
-	if !args.has_key['user_geo_dma']:
+	if not args.has_key['user_geo_dma']:
 	    args['user_geo_dma']="NA"	
 	    
         #Here we assume that the third party URL being passed is not URL Escaped. Hence split by &red=
