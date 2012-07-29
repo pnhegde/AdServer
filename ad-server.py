@@ -85,7 +85,7 @@ class MainHandler(tornado.web.RequestHandler):
 		self.write("<img width='1' height='1' src='http://cm.g.doubleclick.net/pixel?google_nid=ipm&google_cm'>\n")
 
 	args['imp_uid']=imp_uid
-	impressionId=uuid.uuid4()
+	impressionId=str(uuid.uuid4())
 	args['impressionId']=impressionId
 	params=base64.b64encode(json.dumps(args))
 	params=params.replace("+","-").replace("/","_").replace("=","")
