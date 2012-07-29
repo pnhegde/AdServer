@@ -148,6 +148,8 @@ class MainHandler(tornado.web.RequestHandler):
             "bannerId":args['bid'],
             "exchange":args['e'],
             "domain":args['d'],
+            "state":args['user_geo_state'],
+            "dma":args['user_geo_dma'],
             "price":encrPrice,
             "timestamp_GMT":datetime.datetime.now().strftime("%Y-%d-%m %H:%M:%S"),
         })
