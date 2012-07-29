@@ -178,7 +178,6 @@ class MainHandler(tornado.web.RequestHandler):
             cw=30        
         self.set_cookie(cookiename,cookieval,expires_days=cw)
         self.redirect(redirect_url)
-	self.flush()
         
         imp_uid = self.get_cookie("imp_uid",default=False)
                
