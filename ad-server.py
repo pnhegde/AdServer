@@ -63,12 +63,9 @@ class MainHandler(tornado.web.RequestHandler):
 	    randomBannerId = choice(banners)
 	    args['bid']=randomBannerId
 	    
-	if not args.has_key('user_geo_state'):
-	    args['user_geo_state']="NA"
-	
-	if not args.has_key('user_geo_dma'):
-	    args['user_geo_dma']="NA"	
-	    
+	if not args.has_key('geoState'):
+	    args['geoState']="NA"
+
         #Here we assume that the third party URL being passed is not URL Escaped. Hence split by &red=
         ta = self.request.query.split("&red=")
         thirdPartyUrl = ta[1]
@@ -154,8 +151,7 @@ class MainHandler(tornado.web.RequestHandler):
             "bannerId":args['bid'],
             "exchange":args['e'],
             "domain":args['d'],
-            "state":args['user_geo_state'],
-            "dma":args['user_geo_dma'],
+            "state":args['geoState'],
             "price":encrPrice,
             "timestamp_GMT":datetime.datetime.now().strftime("%Y-%d-%m %H:%M:%S"),
         })
