@@ -62,13 +62,33 @@ class MainHandler(tornado.web.RequestHandler):
 	    banners = adIndex['banners:'+str(args['cid'])+':'+str(args['w'])+':'+str(args['h'])]
 	    randomBannerId = choice(banners)
 	    args['bid']=randomBannerId
-	    params=base64.b64encode(json.dumps(args))
-	    params=params.replace("+","-").replace("/","_").replace("=","")
 	    
         #Here we assume that the third party URL being passed is not URL Escaped. Hence split by &red=
         ta = self.request.query.split("&red=")
         thirdPartyUrl = ta[1]
         ip = self.request.remote_ip
+        
+        #If imp_uid is not set, we are seeing the user for first time.
+        #Create new cookie imp_uid and also drop syncronization pixels in the browser
+        imp_uid = self.get_cookie("imp_uid",default=False)
+        if imp_uid == False:
+	    imp_uid = str(uuid.uuid4())
+	    self.set_cookie("imp_uid",imp_uid,expires_days=365)
+	    self.write("<img width='1' height='1' src='http://r.openx.net/set?pid=532485e2-f94e-8ad2-384a-01d3e0cdd7f1&rtb="+imp_uid+"'>\n")
+            self.write("<img width='1' height='1' src='http://rtbidder.impulse01.com/sync'>\n")
+            self.write("<img width='1' height='1' src='http://cm.g.doubleclick.net/pixel?google_nid=ipm&google_cm'>\n")
+        else:
+            sy2 = self.get_cookie("sy2",default=False)
+            if sy2 == False:
+		self.write("<img width='1' height='1' src='http://r.openx.net/set?pid=532485e2-f94e-8ad2-384a-01d3e0cdd7f1&rtb="+imp_uid+"'>\n")
+		self.write("<img width='1' height='1' src='http://rtbidder.impulse01.com/sync'>\n")
+		self.write("<img width='1' height='1' src='http://cm.g.doubleclick.net/pixel?google_nid=ipm&google_cm'>\n")
+
+	args['imp_uid']=imp_uid
+	impressionId=uuid.uuid4()
+	args['impressionId']=impressionId
+	params=base64.b64encode(json.dumps(args))
+	params=params.replace("+","-").replace("/","_").replace("=","")
 
         if adIndex.has_key('c:'+str(args['cid'])+':b:'+str(args['bid'])+':url'):
             url = adIndex['c:'+str(args['cid'])+':b:'+str(args['bid'])+':url']
@@ -100,22 +120,6 @@ class MainHandler(tornado.web.RequestHandler):
             for p in pb:
                 self.write("<script src=\"http://rtbidder.impulse01.com/segment?group="+str(p)+"\"></script>")
 
-        #If imp_uid is not set, we are seeing the user for first time.
-        #Create new cookie imp_uid and also drop syncronization pixels in the browser
-        imp_uid = self.get_cookie("imp_uid",default=False)
-        if imp_uid == False:
-	    imp_uid = str(uuid.uuid4())
-	    self.set_cookie("imp_uid",imp_uid,expires_days=365)
-	    self.write("<img width='1' height='1' src='http://r.openx.net/set?pid=532485e2-f94e-8ad2-384a-01d3e0cdd7f1&rtb="+imp_uid+"'>\n")
-            self.write("<img width='1' height='1' src='http://rtbidder.impulse01.com/sync'>\n")
-            self.write("<img width='1' height='1' src='http://cm.g.doubleclick.net/pixel?google_nid=ipm&google_cm'>\n")
-        else:
-            sy2 = self.get_cookie("sy2",default=False)
-            if sy2 == False:
-		self.write("<img width='1' height='1' src='http://r.openx.net/set?pid=532485e2-f94e-8ad2-384a-01d3e0cdd7f1&rtb="+imp_uid+"'>\n")
-		self.write("<img width='1' height='1' src='http://rtbidder.impulse01.com/sync'>\n")
-		self.write("<img width='1' height='1' src='http://cm.g.doubleclick.net/pixel?google_nid=ipm&google_cm'>\n")
-
         #Set the view through cookie to indicate that this user has seen this ad impression.
         #View through cookies are in the form of i203 where 203= campaign ID
         cookieval = base64.b64encode(json.dumps({"cid":args['cid'],
@@ -138,6 +142,7 @@ class MainHandler(tornado.web.RequestHandler):
         self.flush()
 
         message=json.dumps({"message":"IMP",
+            "impressionId":impressionId,
             "imp_uid":imp_uid,
             "campaignId":args['cid'],
             "bannerId":args['bid'],
@@ -169,7 +174,7 @@ class MainHandler(tornado.web.RequestHandler):
             cw = adIndex['cw:'+str(args['cid'])]
             if cw==0:
 	        cw=30
-        else : 
+        else :
             cw=30        
         self.set_cookie(cookiename,cookieval,expires_days=cw)
         self.redirect(redirect_url)
@@ -179,6 +184,7 @@ class MainHandler(tornado.web.RequestHandler):
                
         log = {"message":"CLK",
             "imp_uid":imp_uid,
+            "impressionId":args['impressionId'],
             "campaignId":args['cid'],
             "bannerId":args['bid'],
             "exchange":args['e'],
