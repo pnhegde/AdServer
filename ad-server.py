@@ -71,18 +71,17 @@ class MainHandler(tornado.web.RequestHandler):
         thirdPartyUrl = ta[1]
         ip = self.request.remote_ip
         
-        #If imp_uid is not set, we are seeing the user for first time.
-        #Create new cookie imp_uid and also drop syncronization pixels in the browser
+        #If imp_uid is not set, we are seeing the user for first time. Set new imp_uid
         imp_uid = self.get_cookie("imp_uid",default=False)
         if imp_uid == False:
 	    imp_uid = str(uuid.uuid4())
 	    self.set_cookie("imp_uid",imp_uid,expires_days=365)
-	    self.write("<img width='1' height='1' src='http://r.openx.net/set?pid=532485e2-f94e-8ad2-384a-01d3e0cdd7f1&rtb="+imp_uid+"'>\n")
-            self.write("<img width='1' height='1' src='http://rtbidder.impulse01.com/sync'>\n")
-            self.write("<img width='1' height='1' src='http://cm.g.doubleclick.net/pixel?google_nid=ipm&google_cm'>\n")
-        else:
-            sy2 = self.get_cookie("sy2",default=False)
-            if sy2 == False:
+
+        #Create new cookie imp_uid and also drop syncronization pixels in the browser.
+        #Only do if user has not opted out of tracking
+        sy2 = self.get_cookie("sy2",default=False)
+        if not sy2=="no":
+	    if sy2 == False:
 		self.write("<img width='1' height='1' src='http://r.openx.net/set?pid=532485e2-f94e-8ad2-384a-01d3e0cdd7f1&rtb="+imp_uid+"'>\n")
 		self.write("<img width='1' height='1' src='http://rtbidder.impulse01.com/sync'>\n")
 		self.write("<img width='1' height='1' src='http://cm.g.doubleclick.net/pixel?google_nid=ipm&google_cm'>\n")
@@ -329,6 +328,7 @@ class MainHandler(tornado.web.RequestHandler):
         
     def optout(self,info):
         self.clear_all_cookies()
+        self.set_cookie("sy2","no",expires_days=365)
         self.write("You have been opted out and we can no longer track you")
     
     def sendToLogAgent(self,message):
