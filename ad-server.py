@@ -103,7 +103,9 @@ class MainHandler(tornado.web.RequestHandler):
 
         finalUrl = "http://rtbidder.impulse01.com/click?info="+params+"&red="+url
         
-        creativeUrl = adIndex['b:'+str(args['bid'])+':url']
+        if adIndex.has_key('b:'+str(args['bid'])+':url'):
+            creativeUrl = adIndex['b:'+str(args['bid'])+':url']
+            
         bannerData = adIndex['b:'+str(args['bid'])+':data']
 
         if bannerData[0] == 1:
