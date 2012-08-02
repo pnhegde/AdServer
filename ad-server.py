@@ -101,6 +101,8 @@ class MainHandler(tornado.web.RequestHandler):
         else:
             finalUrl = thirdPartyUrl+urllib.quote("http://rtbidder.impulse01.com/click?info="+params+"&red="+url)
 
+        finalUrl = "http://rtbidder.impulse01.com/click?info="+params+"&red="+url
+        
         creativeUrl = adIndex['b:'+str(args['bid'])+':url']
         bannerData = adIndex['b:'+str(args['bid'])+':data']
 
