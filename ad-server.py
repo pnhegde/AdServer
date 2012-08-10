@@ -205,7 +205,8 @@ class MainHandler(tornado.web.RequestHandler):
 	      
 	    if group==43:
 	      self.write("document.write(\"<img height='1' width='1' src='http://www.googleadservices.com/pagead/viewthroughconversion/952217567/?value=0&amp;label=EJQdCMH2rAQQ39-GxgM&amp;guid=ON&amp;script=0'/>\");")
-	      
+	      self.write("document.write(\"<img src='http://tags.rtbidder.net/track?sid=5024eb588bc06f037822b994' width='0' height='0' border='0' alt='' />\");")
+	      	      
 	    queryString = self.request.query    #get query string of the url
             attributes = dict([part.split('=') for part in queryString.split('&')]) #Convert the query to dictonary
             del attributes['group'] #Remove the 1st argument 'group'
