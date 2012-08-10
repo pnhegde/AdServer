@@ -202,7 +202,11 @@ class MainHandler(tornado.web.RequestHandler):
             group = int(self.get_argument('group'))
             if group==24:
 	      self.write("document.write(\"<img height='1' width='1' src='http://www.googleadservices.com/pagead/conversion/952217567/?value=0&amp;label=GHfnCMm2owQQ39-GxgM&amp;guid=ON&amp;script=0'/>\");")
-            queryString = self.request.query    #get query string of the url
+	      
+	    if group==43:
+	      self.write("document.write(\"<img height='1' width='1' src='http://www.googleadservices.com/pagead/viewthroughconversion/952217567/?value=0&amp;label=EJQdCMH2rAQQ39-GxgM&amp;guid=ON&amp;script=0'/>\");")
+	      
+	    queryString = self.request.query    #get query string of the url
             attributes = dict([part.split('=') for part in queryString.split('&')]) #Convert the query to dictonary
             del attributes['group'] #Remove the 1st argument 'group'
                                             
