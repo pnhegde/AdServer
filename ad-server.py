@@ -345,11 +345,12 @@ def refreshCache():
     global adIndex
     http_client = tornado.httpclient.HTTPClient()
     try:
-        response = http_client.fetch("http://user.impulse01.com:5003/adindex")
+        response = http_client.fetch("http://user.impulse01.com:5003/adIndex")
         invertedIndex=json.loads(response.body)
     except:
         invertedIndex=dict()
     adIndex=invertedIndex
+    print adIndex
     
 
 define("port", default=8888, help="run on the given port", type=int)
