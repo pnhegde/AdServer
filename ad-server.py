@@ -139,8 +139,8 @@ class MainHandler(tornado.web.RequestHandler):
 	    impressionCount = impCookie["impressionCount"]+1
 	    
 	cookieval = base64.b64encode(json.dumps({
-	    "impressionId":impressionId
-	    "impressionCount":impressionCount
+	    "impressionId":impressionId,
+	    "impressionCount":impressionCount,
 	    "timestamp_GMT":datetime.datetime.now().strftime("%Y-%d-%m %H:%M:%S")
 	}))	    
 
@@ -163,7 +163,7 @@ class MainHandler(tornado.web.RequestHandler):
             "country":args["country"],
             "bid":args['b'],
             "price":encrPrice,
-            "frequency":impressionCount
+            "impressionCount":impressionCount,
             "timestamp_GMT":datetime.datetime.now().strftime("%Y-%d-%m %H:%M:%S")
         })
         self.sendToLogAgent(message)
