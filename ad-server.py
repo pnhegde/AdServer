@@ -183,7 +183,7 @@ class MainHandler(tornado.web.RequestHandler):
             "timestamp_GMT":datetime.datetime.now().strftime("%Y-%d-%m %H:%M:%S")
         }))
         cookiename = 'c'+str(cid)
-        if adIndex.has_key('cw:'+str(cid):
+        if adIndex.has_key('cw:'+str(cid)):
             cw = adIndex['cw:'+str(cid)]
         else :
             cw=30        
