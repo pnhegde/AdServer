@@ -167,6 +167,7 @@ class MainHandler(tornado.web.RequestHandler):
             "timestamp_GMT":datetime.datetime.now().strftime("%Y-%d-%m %H:%M:%S")
         })
         self.sendToLogAgent(message)
+        print message
 
     def click(self,info):
         cid = int(self.get_argument('cid'))
@@ -197,6 +198,7 @@ class MainHandler(tornado.web.RequestHandler):
         }
         message=json.dumps(log)
         self.sendToLogAgent(message)
+        print message
 
     def segment(self,info):
         try:
