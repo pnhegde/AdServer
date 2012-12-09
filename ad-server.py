@@ -177,9 +177,9 @@ class MainHandler(tornado.web.RequestHandler):
         redirect_url = ta[1]
 
         #Set the click through cookie to indicate that the user clicked on this ad.
-        cookieval = base64.b64encode(json.dumps({"cid":cid
+        cookieval = base64.b64encode(json.dumps({"cid":cid,
 	    "bid":bid,
-            "impressionId":impressionId
+            "impressionId":impressionId,
             "timestamp_GMT":datetime.datetime.now().strftime("%Y-%d-%m %H:%M:%S")
         }))
         cookiename = 'c'+str(cid)
