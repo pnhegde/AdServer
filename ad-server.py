@@ -12,7 +12,7 @@ import json
 import datetime
 import base64
 import sys
-
+import zlib
 import pika
 import urllib
 import uuid
@@ -50,6 +50,8 @@ class MainHandler(tornado.web.RequestHandler):
             self.optout(self.request.query)  
             
     def serve(self,info):
+        self.set_header("Cache-Control","no-cache")
+        self.set_header("Pragma","no-cache")      
         params = self.get_argument('info')
         newParams = params.replace("-","+").replace("_","/")
         newParams = newParams + '=' * (4 - len(newParams) % 4)
@@ -58,13 +60,20 @@ class MainHandler(tornado.web.RequestHandler):
         random = self.get_argument('r')
 
         #No banner ID passed. This means this is a direct ad code. Whatever it is, decide the banner first and update the arguments.
-        if args['bid']==0:
-	    banners = adIndex['banners:'+str(args['cid'])+':'+str(args['w'])+':'+str(args['h'])]
-	    randomBannerId = choice(banners)
+        if not args.has_key("bid"):
+	    randomBannerId = choice(adIndex['banners:'+str(args['cid'])+':'+str(args['w'])+':'+str(args['h'])])
 	    args['bid']=randomBannerId
+	    del args['w']
+	    del args['h']
 	    
-	if not args.has_key('geoState'):
-	    args['geoState']="NA"
+	if not args.has_key('s'):
+	    args['s']="NA"
+
+	if not args.has_key('c'):
+	    args['c']="NA"
+
+	if not args.has_key('country'):
+	    args['country']="NA"
 
         #Here we assume that the third party URL being passed is not URL Escaped. Hence split by &red=
         ta = self.request.query.split("&red=")
@@ -80,32 +89,36 @@ class MainHandler(tornado.web.RequestHandler):
 	args['imp_uid']=imp_uid
 	impressionId=str(uuid.uuid4())
 	args['impressionId']=impressionId
+	    
 	params=base64.b64encode(json.dumps(args))
 	params=params.replace("+","-").replace("/","_").replace("=","")
 
         if adIndex.has_key('c:'+str(args['cid'])+':b:'+str(args['bid'])+':url'):
+	  if len(adIndex['c:'+str(args['cid'])+':b:'+str(args['bid'])+':url'])>0:
             url = adIndex['c:'+str(args['cid'])+':b:'+str(args['bid'])+':url']
+          else:
+            url = adIndex['c:'+str(args['cid'])+':url']	    
         else : 
             url = adIndex['c:'+str(args['cid'])+':url']
 
         if len(thirdPartyUrl) == 0:
-            finalUrl = "http://rtbidder.impulse01.com/click?info="+params+"&red="+url
+            finalUrl = "http://rtbidder.impulse01.com/click?id="+impressionId+"&cid="+str(args['cid'])+"&bid="+str(args['bid'])+"&red="+url
         else:
             finalUrl = thirdPartyUrl+urllib.quote("http://rtbidder.impulse01.com/click?info="+params+"&red="+url)
         
         if adIndex.has_key('b:'+str(args['bid'])+':url'):
             creativeUrl = adIndex['b:'+str(args['bid'])+':url']
             
-        bannerData = adIndex['b:'+str(args['bid'])+':data']
-
-        if bannerData[0] == 1:
-            self.write('<a href="'+finalUrl+'" target="_blank"><img src="http://d3pim9r6015lw5.cloudfront.net'+creativeUrl+'" width="'+str(bannerData[1])+'" height="'+str(bannerData[2])+'" border=0></a>')
+	width = adIndex['b:'+str(args['bid'])+':width']
+	height = adIndex['b:'+str(args['bid'])+':height']
+            
+        if adIndex['b:'+str(args['bid'])+':type'] == 1:
+            self.write('<a href="'+finalUrl+'" target="_blank"><img src="http://d3pim9r6015lw5.cloudfront.net'+creativeUrl+'" width="'+str(width)+'" height="'+str(height)+'" border=0></a>')
  
-        if bannerData[0] == 2:
-            self.write('<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0" width="'+str(bannerData[1])+'" height="'+str(bannerData[2])+'"  id="mymoviename"><param name="movie" value="http://d3pim9r6015lw5.cloudfront.net'+creativeUrl+'?clickTag='+urllib.quote(finalUrl)+'" /> <param name="quality" value="high" /> <param name="bgcolor" value="#ffffff" /><param name="wmode" value="transparent"><embed src="http://d3pim9r6015lw5.cloudfront.net'+creativeUrl+'?clickTag='+urllib.quote(finalUrl)+'" quality="high" bgcolor="#ffffff" width="'+str(bannerData[1])+'" height="'+str(bannerData[2])+'" name="mymoviename" align="" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer"> </embed> </object>')
+        if adIndex['b:'+str(args['bid'])+':type'] == 2:
+            self.write('<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0" width="'+str(width)+'" height="'+str(height)+'"  id="mymoviename"><param name="movie" value="http://d3pim9r6015lw5.cloudfront.net'+creativeUrl+'?clickTag='+urllib.quote(finalUrl)+'" /> <param name="quality" value="high" /> <param name="bgcolor" value="#ffffff" /><param name="wmode" value="transparent"><embed src="http://d3pim9r6015lw5.cloudfront.net'+creativeUrl+'?clickTag='+urllib.quote(finalUrl)+'" quality="high" bgcolor="#ffffff" width="'+str(width)+'" height="'+str(height)+'" name="mymoviename" align="" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer"> </embed> </object>')
 
-        if bannerData[0] == 3:
-            finalUrl = thirdPartyUrl+urllib.urlencode("http://rtbidder.impulse01.com/click?info="+params+"&red=")
+        if adIndex['b:'+str(args['bid'])+':type'] == 4:
             code = adIndex['b:'+str(args['bid'])+':code']
             code.replace("[CLICK_MACRO]",urllib.urlencode(finalUrl))
             self.write(code)
@@ -117,23 +130,25 @@ class MainHandler(tornado.web.RequestHandler):
 
         #Set the view through cookie to indicate that this user has seen this ad impression.
         #View through cookies are in the form of i203 where 203= campaign ID
-        cookieval = base64.b64encode(json.dumps({"cid":args['cid'],
-            "bid":args['bid'],
-            "e":args['e'],
-            "d":args['d'],
-            "timestamp_GMT":datetime.datetime.now().strftime("%Y-%d-%m %H:%M:%S")
-        }))
-        cookiename = 'v'+str(args['cid'])
+        cookiename = 'v'+str(args['cid'])        
+        impCookie = self.get_cookie(cookiename,default=False)
+        if impCookie == False:
+	    impressionCount=0
+	else:
+	    impCookie=json.loads(base64.b64decode(impCookie))
+	    impressionCount = impCookie["impressionCount"]+1
+	    
+	cookieval = base64.b64encode(json.dumps({
+	    "impressionId":impressionId
+	    "impressionCount":impressionCount
+	    "timestamp_GMT":datetime.datetime.now().strftime("%Y-%d-%m %H:%M:%S")
+	}))	    
+
         if adIndex.has_key('vw:'+str(args['cid'])):
             vw = adIndex['vw:'+str(args['cid'])]
-            if vw==0:
-	        vw=30
         else : 
             vw=30
         self.set_cookie(cookiename,cookieval,expires_days=vw)
-        
-        self.set_header("Cache-Control","no-cache")
-        self.set_header("Pragma","no-cache")
         self.flush()
 
         message=json.dumps({"message":"IMP",
@@ -143,48 +158,42 @@ class MainHandler(tornado.web.RequestHandler):
             "bannerId":args['bid'],
             "exchange":args['e'],
             "domain":args['d'],
-            "state":args['geoState'],
+            "state":args['s'],
+            "city":args['c'],
+            "country":args["country"],
+            "bid":args['b'],
             "price":encrPrice,
-            "timestamp_GMT":datetime.datetime.now().strftime("%Y-%d-%m %H:%M:%S"),
+            "frequency":impressionCount
+            "timestamp_GMT":datetime.datetime.now().strftime("%Y-%d-%m %H:%M:%S")
         })
         self.sendToLogAgent(message)
 
     def click(self,info):
-        params = self.get_argument('info')
-        newParams = params.replace("-","+").replace("_","/")
-        newParams = newParams + '=' * (4 - len(newParams) % 4)
-        args = json.loads(base64.b64decode(newParams))
-
+        cid = int(self.get_argument('cid'))
+        bid = int(self.get_argument('bid'))
+        impressionId = self.get_argument('id')        
+        
         ta=self.request.query.split("&red=")
         redirect_url = ta[1]
 
         #Set the click through cookie to indicate that the user clicked on this ad.
-        cookieval = base64.b64encode(json.dumps({"cid":args['cid'],
-            "bid":args['bid'],
-            "e":args['e'],
-            "d":args['d'],
+        cookieval = base64.b64encode(json.dumps({"cid":cid
+	    "bid":bid,
+            "impressionId":impressionId
             "timestamp_GMT":datetime.datetime.now().strftime("%Y-%d-%m %H:%M:%S")
         }))
-        cookiename = 'c'+str(args['cid'])
-        if adIndex.has_key('cw:'+str(args['cid'])):
-            cw = adIndex['cw:'+str(args['cid'])]
-            if cw==0:
-	        cw=30
+        cookiename = 'c'+str(cid)
+        if adIndex.has_key('cw:'+str(cid):
+            cw = adIndex['cw:'+str(cid)]
         else :
             cw=30        
         self.set_cookie(cookiename,cookieval,expires_days=cw)
         self.redirect(redirect_url)
-        
-        imp_uid = self.get_cookie("imp_uid",default=False)
-               
         log = {"message":"CLK",
-            "imp_uid":imp_uid,
-            "impressionId":args['impressionId'],
-            "campaignId":args['cid'],
-            "bannerId":args['bid'],
-            "exchange":args['e'],
-            "domain":args['d'],
-            "timestamp_GMT":datetime.datetime.now().strftime("%Y-%d-%m %H:%M:%S"),
+            "impressionId":impressionId,
+            "bid":bid,
+            "cid":cid,
+            "timestamp_GMT":datetime.datetime.now().strftime("%Y-%d-%m %H:%M:%S")
         }
         message=json.dumps(log)
         self.sendToLogAgent(message)
@@ -304,6 +313,11 @@ class MainHandler(tornado.web.RequestHandler):
         google_gid = self.get_argument('google_gid')
         message_googlematch = json.dumps({"message":"GOOGLEMATCH",
                               "imp_uid":imp_uid,
+          atch(self,info):
+        imp_uid = self.get_cookie("imp_uid",default=False)
+        google_gid = self.get_argument('google_gid')
+        message_googlematch = json.dumps({"message":"GOOGLEMATCH",
+                              "imp_uid":imp_uid,
                               "google_gid":google_gid
                           })
         self.sendToLogAgent(message_googlematch)                    
@@ -336,7 +350,7 @@ def refreshCache():
     global adIndex
     http_client = tornado.httpclient.HTTPClient()
     try:
-        response = http_client.fetch("http://user.impulse01.com/ad-index.php")
+        response = http_client.fetch("http://user.impulse01.com:5003/adindex")
         invertedIndex=json.loads(response.body)
     except:
         invertedIndex=dict()

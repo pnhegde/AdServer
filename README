@@ -1,0 +1,43 @@
+banners:[campaignId]:[width]:[height] = []
+  c:[campaignId]:b:[bannerId]:url = <string>
+  c:[campaignId]:url = <string>
+  b:[bannerId]:url = <creativeUrl>
+  b:[bannerId]:type
+  b:[bannerId]:width
+  b:[bannerId]:height
+  b:[bannerId]:code
+  vw:[campaignId] = <int>
+  cw:[campaignId] = <int>
+
+Exchange Impression
+
+e : "google"
+d : "money.com"
+bid : 22
+cid : 22
+b : 0.23
+s : maharashtra
+c : mumbai
+country : in
+
+Step 1: Set imp_uid
+Step 2: Set impressionId
+Final : e,d,bid,cid,b,s,c,country,imp_uid,impressionId
+
+Direct Impression
+
+e : "direct"
+d : "money.com"
+b : 0.21
+cid : 22
+w : 728
+h :90
+
+Step 1: Set bid (random choice banner), delete w and h
+Step 2: Set state, city, country
+Step 2: Set imp_uid
+Step 3: Set impressionId
+Final: e, d, cid , bid , b, s,c,country, imp_uid, impressionId
+
+<iframe src="http://rtbidder.impulse01.com/serve?info=eyJzIjogImhhcnlhbmEiLCAiYiI6IDAuNjUwMDAwMDAwMDAwMDAwMDIsICJlIjogImdvb2dsZSIsICJkIjogImhvbGlkYXlpcS5jb20iLCAiY2lkIjogNTksICJjb3VudHJ5IjogImluIiwgImJpZCI6IDg5LCAiYyI6ICJndXJnYW9uIn0&p=%%WINNING_PRICE%%&r=%%CACHEBUSTER%%&red=%%CLICK_URL_UNESC%%"
+ width="120" height="600" frameborder=0 marginwidth=0 marginheight=0 scrolling=NO></iframe>
