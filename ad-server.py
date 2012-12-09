@@ -313,11 +313,6 @@ class MainHandler(tornado.web.RequestHandler):
         google_gid = self.get_argument('google_gid')
         message_googlematch = json.dumps({"message":"GOOGLEMATCH",
                               "imp_uid":imp_uid,
-          atch(self,info):
-        imp_uid = self.get_cookie("imp_uid",default=False)
-        google_gid = self.get_argument('google_gid')
-        message_googlematch = json.dumps({"message":"GOOGLEMATCH",
-                              "imp_uid":imp_uid,
                               "google_gid":google_gid
                           })
         self.sendToLogAgent(message_googlematch)                    
