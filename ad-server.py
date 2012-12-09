@@ -20,6 +20,7 @@ import tornado.ioloop
 import tornado.web
 import tornado.httpclient
 import redis
+from pytz import timezone
 
 from urlparse import urlparse
 from tornado.web import asynchronous
@@ -137,11 +138,14 @@ class MainHandler(tornado.web.RequestHandler):
 	else:
 	    impCookie=json.loads(base64.b64decode(impCookie))
 	    impressionCount = impCookie["impressionCount"]+1
+
+	india_tz = timezone('Asia/Kolkata')
+	india_time = datetime.datetime.now(india_tz)	    
 	    
 	cookieval = base64.b64encode(json.dumps({
 	    "impressionId":impressionId,
 	    "impressionCount":impressionCount,
-	    "timestamp_GMT":datetime.datetime.now().strftime("%Y-%d-%m %H:%M:%S")
+	    "timestamp_GMT":datetime.datetime.now(india_tz).strftime("%Y-%d-%m %H:%M:%S")
 	}))	    
 
         if adIndex.has_key('vw:'+str(args['cid'])):
@@ -164,7 +168,7 @@ class MainHandler(tornado.web.RequestHandler):
             "bid":args['b'],
             "price":encrPrice,
             "impressionCount":impressionCount,
-            "timestamp_GMT":datetime.datetime.now().strftime("%Y-%d-%m %H:%M:%S")
+            "timestamp_GMT":datetime.datetime.now(india_tz).strftime("%Y-%d-%m %H:%M:%S")
         })
         self.sendToLogAgent(message)
         print message
@@ -181,7 +185,6 @@ class MainHandler(tornado.web.RequestHandler):
         cookieval = base64.b64encode(json.dumps({"cid":cid,
 	    "bid":bid,
             "impressionId":impressionId,
-            "timestamp_GMT":datetime.datetime.now().strftime("%Y-%d-%m %H:%M:%S")
         }))
         cookiename = 'c'+str(cid)
         if adIndex.has_key('cw:'+str(cid)):
