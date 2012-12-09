@@ -349,9 +349,7 @@ def refreshCache():
         invertedIndex=json.loads(response.body)
     except:
         invertedIndex=dict()
-    adIndex=invertedIndex
-    print adIndex
-    
+    adIndex=invertedIndex    
 
 define("port", default=8888, help="run on the given port", type=int)
 define("name", default="noname", help="name of the server")
