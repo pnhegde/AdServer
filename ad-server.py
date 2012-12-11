@@ -18,7 +18,6 @@ import uuid
 import tornado.ioloop
 import tornado.web
 import tornado.httpclient
-import redis
 from pytz import timezone
 
 from urlparse import urlparse
