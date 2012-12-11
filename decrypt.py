@@ -1,7 +1,7 @@
 import base64
 import hmac,hashlib
 
-price = "UAPCmgAKaKoKg3oFwpotbRYhZC41KN53eOXCgQ"
+price = "UAPCmgAKZ8IKg3oFwpotbWH5ve2x7j6qlK-3lg"
 price = price.replace("-","+").replace("_","/")
 price = price + '=' * (4 - len(price) % 4)
 dprice=base64.b64decode(price)

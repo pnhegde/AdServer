@@ -13,7 +13,6 @@ import datetime
 import base64
 import sys
 import zlib
-import pika
 import urllib
 import uuid
 import tornado.ioloop
@@ -190,7 +189,7 @@ class MainHandler(tornado.web.RequestHandler):
         if adIndex.has_key('cw:'+str(cid)):
             cw = adIndex['cw:'+str(cid)]
         else :
-            cw=30        
+            cw=30
         self.set_cookie(cookiename,cookieval,expires_days=cw)
         self.redirect(redirect_url)
         log = {"message":"CLK",
