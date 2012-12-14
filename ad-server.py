@@ -19,7 +19,7 @@ import tornado.ioloop
 import tornado.web
 import tornado.httpclient
 from pytz import timezone
-import GeoISP
+import GeoIP
 
 from urlparse import urlparse
 from tornado.web import asynchronous
