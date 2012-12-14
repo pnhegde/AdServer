@@ -19,6 +19,7 @@ import tornado.ioloop
 import tornado.web
 import tornado.httpclient
 from pytz import timezone
+import GeoISP
 
 from urlparse import urlparse
 from tornado.web import asynchronous
@@ -49,6 +50,8 @@ class MainHandler(tornado.web.RequestHandler):
             self.optout(self.request.query)  
             
     def serve(self,info):
+	global gi
+	global gi_city
         self.set_header("Cache-Control","no-cache")
         self.set_header("Pragma","no-cache")      
         params = self.get_argument('info')
@@ -64,15 +67,19 @@ class MainHandler(tornado.web.RequestHandler):
 	    args['bid']=randomBannerId
 	    del args['w']
 	    del args['h']
+	
+	ip = self.request.remote_ip
+	isp = gi.ISP_by_addr(ip)
+	gir = gi_city.record_by_name(ip)
 	    
 	if not args.has_key('s'):
-	    args['s']="NA"
+	    args['s']=gir["region_name"]
 
 	if not args.has_key('c'):
-	    args['c']="NA"
+	    args['c']=gir["city"]
 
 	if not args.has_key('country'):
-	    args['country']="NA"
+	    args['country']=gir["country_name"]
 
         #Here we assume that the third party URL being passed is not URL Escaped. Hence split by &red=
         ta = self.request.query.split("&red=")
@@ -88,9 +95,6 @@ class MainHandler(tornado.web.RequestHandler):
 	args['imp_uid']=imp_uid
 	impressionId=str(uuid.uuid4())
 	args['impressionId']=impressionId
-	    
-	params=base64.b64encode(json.dumps(args))
-	params=params.replace("+","-").replace("/","_").replace("=","")
 
         if adIndex.has_key('c:'+str(args['cid'])+':b:'+str(args['bid'])+':url'):
 	  if len(adIndex['c:'+str(args['cid'])+':b:'+str(args['bid'])+':url'])>0:
@@ -103,7 +107,7 @@ class MainHandler(tornado.web.RequestHandler):
         if len(thirdPartyUrl) == 0:
             finalUrl = "http://rtbidder.impulse01.com/click?id="+impressionId+"&cid="+str(args['cid'])+"&bid="+str(args['bid'])+"&red="+url
         else:
-            finalUrl = thirdPartyUrl+urllib.quote("http://rtbidder.impulse01.com/click?info="+params+"&red="+url)
+            finalUrl = thirdPartyUrl+urllib.quote("http://rtbidder.impulse01.com/click?id="+impressionId+"&cid="+str(args['cid'])+"&bid="+str(args['bid'])+"&red="+url)
         
         if adIndex.has_key('b:'+str(args['bid'])+':url'):
             creativeUrl = adIndex['b:'+str(args['bid'])+':url']
@@ -193,8 +197,6 @@ class MainHandler(tornado.web.RequestHandler):
         self.redirect(redirect_url)
         log = {"message":"CLK",
             "impressionId":impressionId,
-            "bid":bid,
-            "cid":cid,
             "timestamp_GMT":datetime.datetime.now().strftime("%Y-%d-%m %H:%M:%S")
         }
         message=json.dumps(log)
@@ -360,6 +362,9 @@ define("refreshCache", default=5000, help="millisecond interval between cache re
 
 application = tornado.web.Application([(r".*", MainHandler),])
 adIndex = dict()
+gi = GeoIP.open("/usr/share/GeoIP/GeoIPISP.dat",GeoIP.GEOIP_STANDARD)
+gi_city = GeoIP.open("/usr/share/GeoIP/GeoIPCityin.dat",GeoIP.GEOIP_STANDARD)
+
 
 if __name__ == "__main__":
     print "starting server name="+options.name
