@@ -148,7 +148,7 @@ class MainHandler(tornado.web.RequestHandler):
 	    "impressionId":impressionId,
 	    "impressionCount":impressionCount,
 	    "timestamp_GMT":datetime.datetime.now(india_tz).strftime("%Y-%d-%m %H:%M:%S")
-	}))	    
+	}))
 
         if adIndex.has_key('vw:'+str(args['cid'])):
             vw = adIndex['vw:'+str(args['cid'])]
@@ -171,6 +171,7 @@ class MainHandler(tornado.web.RequestHandler):
             "price":encrPrice,
             "impressionCount":impressionCount,
             "isp":isp,
+            "ip":ip,
             "timestamp_GMT":datetime.datetime.now(india_tz).strftime("%Y-%d-%m %H:%M:%S")
         })
         self.sendToLogAgent(message)
@@ -185,10 +186,7 @@ class MainHandler(tornado.web.RequestHandler):
         redirect_url = ta[1]
 
         #Set the click through cookie to indicate that the user clicked on this ad.
-        cookieval = base64.b64encode(json.dumps({"cid":cid,
-	    "bid":bid,
-            "impressionId":impressionId,
-        }))
+        cookieval = impressionId
         cookiename = 'c'+str(cid)
         if adIndex.has_key('cw:'+str(cid)):
             cw = adIndex['cw:'+str(cid)]
@@ -196,7 +194,7 @@ class MainHandler(tornado.web.RequestHandler):
             cw=30
         self.set_cookie(cookiename,cookieval,expires_days=cw)
         self.redirect(redirect_url)
-        log = {"message":"CLK",
+        log = {"message":"CLICK",
             "impressionId":impressionId,
             "timestamp_GMT":datetime.datetime.now().strftime("%Y-%d-%m %H:%M:%S")
         }
@@ -207,13 +205,6 @@ class MainHandler(tornado.web.RequestHandler):
     def segment(self,info):
         try:
             group = int(self.get_argument('group'))
-            if group==24:
-	      self.write("document.write(\"<img height='1' width='1' src='http://www.googleadservices.com/pagead/conversion/952217567/?value=0&amp;label=GHfnCMm2owQQ39-GxgM&amp;guid=ON&amp;script=0'/>\");")
-	      
-	    if group==43:
-	      self.write("document.write(\"<img height='1' width='1' src='http://www.googleadservices.com/pagead/viewthroughconversion/952217567/?value=0&amp;label=EJQdCMH2rAQQ39-GxgM&amp;guid=ON&amp;script=0'/>\");")
-	      self.write("document.write(\"<img src='http://tags.rtbidder.net/track?sid=5024eb588bc06f037822b994' width='0' height='0' border='0' alt='' />\");")
-	      	      
 	    queryString = self.request.query    #get query string of the url
             attributes = dict([part.split('=') for part in queryString.split('&')]) #Convert the query to dictonary
             del attributes['group'] #Remove the 1st argument 'group'
@@ -288,23 +279,22 @@ class MainHandler(tornado.web.RequestHandler):
             campaignId=int(self.get_argument('id'))
             cookiename="c"+str(campaignId)
             clickinfo=self.get_cookie(cookiename,default=False)
+            message=""
             if clickinfo!=False:
-                args=json.loads(base64.b64decode(clickinfo))
-                message=json.dumps({"message":"CONV",
-                    "campaignId":args['campaignId'],
-                    "bannerId":args['bannerId'],
-                    "exchange":args['exchange'],
-                    "domain":args['domain'],
-                    "timestamp_GMT":datetime.datetime.now().strftime("%Y-%d-%m %H:%M:%S")
+                message=json.dumps({"message":"CLICKCONV",
+                    "impressionId":clickinfo
                 })
-                if adIndex.has_key('c:'+str(campaignId)+':sifi'):
-                    sifiid=adIndex['c:'+str(campaignId)+':sifi']
-                    self.write("document.write(\"<script src='http://i.simpli.fi/dpx.js?cid=1565&conversion=0&campaign_id="+str(sifiid)+"&m=1&c=0'></script>\");\n")
-                self.sendToLogAgent(message)
-
-            if campaignId==115:
-                self.write("document.write(\"<script src='http://i.simpli.fi/dpx.js?cid=1565&conversion=10&campaign_id=8683&m=1'></script>\");\n")
-                print "stuff"
+            else:
+		cookiename="v"+str(campaignId)
+		viewinfo=self.get_cookie(cookiename,default=False)
+		if viewinfo!=False:		
+		    args=json.loads(base64.b64decode(viewinfo))
+		    message=json.dumps({"message":"VIEWCONV",
+			"impressionId":args["impressionId"]
+		    })
+	    if len(message)>0:
+	      self.sendToLogAgent(message)
+	                          
         except:
             print "conversion exception",sys.exc_info()
 
@@ -351,7 +341,7 @@ def refreshCache():
     global adIndex
     http_client = tornado.httpclient.HTTPClient()
     try:
-        response = http_client.fetch("http://user.impulse01.com:5003/adIndex")
+        response = http_client.fetch("http://terminal.impulse01.com:5003/adIndex")
         invertedIndex=json.loads(response.body)
     except:
         invertedIndex=dict()
