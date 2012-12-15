@@ -172,7 +172,7 @@ class MainHandler(tornado.web.RequestHandler):
             "impressionCount":impressionCount,
             "isp":isp,
             "ip":ip,
-            "timestamp_GMT":datetime.datetime.now(india_tz).strftime("%Y-%d-%m %H:%M:%S")
+            "timestamp_GMT":datetime.datetime.now(india_tz).strftime("%Y-%m-%d %H:%M:%S")
         })
         self.sendToLogAgent(message)
         print message
@@ -196,7 +196,6 @@ class MainHandler(tornado.web.RequestHandler):
         self.redirect(redirect_url)
         log = {"message":"CLICK",
             "impressionId":impressionId,
-            "timestamp_GMT":datetime.datetime.now().strftime("%Y-%d-%m %H:%M:%S")
         }
         message=json.dumps(log)
         self.sendToLogAgent(message)
