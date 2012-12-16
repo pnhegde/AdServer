@@ -146,7 +146,7 @@ class MainHandler(tornado.web.RequestHandler):
 	cookieval = base64.b64encode(json.dumps({
 	    "impressionId":impressionId,
 	    "impressionCount":impressionCount,
-	    "timestamp_GMT":datetime.datetime.now(india_tz).strftime("%Y-%d-%m %H:%M:%S")
+	    "timestamp_GMT":datetime.datetime.now().strftime("%Y-%d-%m %H:%M:%S")
 	}))
 
         if adIndex.has_key('vw:'+str(args['cid'])):
@@ -171,7 +171,7 @@ class MainHandler(tornado.web.RequestHandler):
             "impressionCount":impressionCount,
             "isp":isp,
             "ip":ip,
-            "timestamp_GMT":datetime.datetime.now(india_tz).strftime("%Y-%m-%d %H:%M:%S")
+            "timestamp_GMT":datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         })
         self.sendToLogAgent(message)
         print message
