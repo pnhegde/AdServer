@@ -174,7 +174,6 @@ class MainHandler(tornado.web.RequestHandler):
             "timestamp_GMT":datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         })
         self.sendToLogAgent(message)
-        print message
 
     def click(self,info):
         cid = int(self.get_argument('cid'))
@@ -198,7 +197,6 @@ class MainHandler(tornado.web.RequestHandler):
         }
         message=json.dumps(log)
         self.sendToLogAgent(message)
-        print message
 
     def segment(self,info):
         try:
@@ -332,6 +330,7 @@ class MainHandler(tornado.web.RequestHandler):
         self.write("You have been opted out and we can no longer track you")
     
     def sendToLogAgent(self,message):
+	print message
         http = tornado.httpclient.AsyncHTTPClient()
         http.fetch('http://localhost:9000/access', method='POST',body=message,callback=None)
 
