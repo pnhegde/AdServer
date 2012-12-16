@@ -4,6 +4,9 @@
 # SEGMENT - http://rtbidder.impulse01.com/segment?group={GroupId}
 # Copyright - Impulse Media Pvt. Ltd.
 
+#INSTALL - TORNADO, GEOIP
+# SET SERVER TIMEZONE to IST
+
 from random import choice
 import time
 import hashlib
@@ -18,7 +21,6 @@ import uuid
 import tornado.ioloop
 import tornado.web
 import tornado.httpclient
-from pytz import timezone
 import GeoIP
 
 from urlparse import urlparse
@@ -141,9 +143,6 @@ class MainHandler(tornado.web.RequestHandler):
 	    impCookie=json.loads(base64.b64decode(impCookie))
 	    impressionCount = impCookie["impressionCount"]+1
 
-	india_tz = timezone('Asia/Kolkata')
-	india_time = datetime.datetime.now(india_tz)	    
-	    
 	cookieval = base64.b64encode(json.dumps({
 	    "impressionId":impressionId,
 	    "impressionCount":impressionCount,
@@ -310,7 +309,7 @@ class MainHandler(tornado.web.RequestHandler):
                               "imp_uid":imp_uid,
                               "google_gid":google_gid
                           })
-        self.sendToLogAgent(message_googlematch)                    
+        self.sendToLogAgent(message_googlematch)
         #NOTE - This is the binary of a 1x1 gif pixel in base64 encoded form
         self.set_header("Content-Type","image/gif")
         self.write(base64.b64decode("R0lGODlhAQABAIAAAP///////yH+EUNyZWF0ZWQgd2l0aCBHSU1QACwAAAAAAQABAAACAkQBADs="))
