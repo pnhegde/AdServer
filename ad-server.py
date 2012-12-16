@@ -107,9 +107,9 @@ class MainHandler(tornado.web.RequestHandler):
             url = adIndex['c:'+str(args['cid'])+':url']
 
         if len(thirdPartyUrl) == 0:
-            finalUrl = "http://rtbidder.impulse01.com/click?id="+impressionId+"&cid="+str(args['cid'])+"&bid="+str(args['bid'])+"&red="+url
+            finalUrl = "http://rtbidder.impulse01.com/click?id="+impressionId+"&red="+url
         else:
-            finalUrl = thirdPartyUrl+urllib.quote("http://rtbidder.impulse01.com/click?id="+impressionId+"&cid="+str(args['cid'])+"&bid="+str(args['bid'])+"&red="+url)
+            finalUrl = thirdPartyUrl+urllib.quote("http://rtbidder.impulse01.com/click?id="+impressionId+"&red="+url)
         
         if adIndex.has_key('b:'+str(args['bid'])+':url'):
             creativeUrl = adIndex['b:'+str(args['bid'])+':url']
