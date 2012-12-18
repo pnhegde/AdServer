@@ -52,128 +52,132 @@ class MainHandler(tornado.web.RequestHandler):
             self.optout(self.request.query)  
             
     def serve(self,info):
-	global gi
-	global gi_city
-        self.set_header("Cache-Control","no-cache")
-        self.set_header("Pragma","no-cache")      
-        params = self.get_argument('info')
-        newParams = params.replace("-","+").replace("_","/")
-        newParams = newParams + '=' * (4 - len(newParams) % 4)
-        args = json.loads(base64.b64decode(newParams))
-        encrPrice = self.get_argument('p')
-        random = self.get_argument('r')
+	try:
+	  global gi
+	  global gi_city
+	  self.set_header("Cache-Control","no-cache")
+	  self.set_header("Pragma","no-cache")      
+	  params = self.get_argument('info')
+	  newParams = params.replace("-","+").replace("_","/")
+	  newParams = newParams + '=' * (4 - len(newParams) % 4)
+	  args = json.loads(base64.b64decode(newParams))
+	  encrPrice = self.get_argument('p')
+	  random = self.get_argument('r')
 
-        #No banner ID passed. This means this is a direct ad code. Whatever it is, decide the banner first and update the arguments.
-        if not args.has_key("bid"):
-	    randomBannerId = choice(adIndex['banners:'+str(args['cid'])+':'+str(args['w'])+':'+str(args['h'])])
-	    args['bid']=randomBannerId
-	    del args['w']
-	    del args['h']
-	
-	ip = self.request.remote_ip
-	isp = gi.org_by_name(ip)
-	gir = gi_city.record_by_name(ip)
-	    
-	if not args.has_key('s'):
-	    args['s']=gir["region_name"]
+	  #No banner ID passed. This means this is a direct ad code. Whatever it is, decide the banner first and update the arguments.
+	  if not args.has_key("bid"):
+	      randomBannerId = choice(adIndex['banners:'+str(args['cid'])+':'+str(args['w'])+':'+str(args['h'])])
+	      args['bid']=randomBannerId
+	      del args['w']
+	      del args['h']
+	  
+	  ip = self.request.remote_ip
+	  isp = gi.org_by_name(ip)
+	  gir = gi_city.record_by_name(ip)
+	      
+	  if not args.has_key('s'):
+	      args['s']=gir["region_name"]
 
-	if not args.has_key('c'):
-	    args['c']=gir["city"]
+	  if not args.has_key('c'):
+	      args['c']=gir["city"]
 
-	if not args.has_key('country'):
-	    args['country']=gir["country_name"]
+	  if not args.has_key('country'):
+	      args['country']=gir["country_name"]
 
-        #Here we assume that the third party URL being passed is not URL Escaped. Hence split by &red=
-        ta = self.request.query.split("&red=")
-        thirdPartyUrl = ta[1]
-        ip = self.request.remote_ip
-        
-        #If imp_uid is not set, we are seeing the user for first time. Set new imp_uid
-        imp_uid = self.get_cookie("imp_uid",default=False)
-        if imp_uid == False:
-	    imp_uid = str(uuid.uuid4())
-	    self.set_cookie("imp_uid",imp_uid,expires_days=365)
+	  #Here we assume that the third party URL being passed is not URL Escaped. Hence split by &red=
+	  ta = self.request.query.split("&red=")
+	  thirdPartyUrl = ta[1]
+	  ip = self.request.remote_ip
+	  
+	  #If imp_uid is not set, we are seeing the user for first time. Set new imp_uid
+	  imp_uid = self.get_cookie("imp_uid",default=False)
+	  if imp_uid == False:
+	      imp_uid = str(uuid.uuid4())
+	      self.set_cookie("imp_uid",imp_uid,expires_days=365)
 
-	args['imp_uid']=imp_uid
-	impressionId=str(uuid.uuid4())
-	args['impressionId']=impressionId
+	  args['imp_uid']=imp_uid
+	  impressionId=str(uuid.uuid4())
+	  args['impressionId']=impressionId
 
-        if adIndex.has_key('c:'+str(args['cid'])+':b:'+str(args['bid'])+':url'):
-	  if len(adIndex['c:'+str(args['cid'])+':b:'+str(args['bid'])+':url'])>0:
-            url = adIndex['c:'+str(args['cid'])+':b:'+str(args['bid'])+':url']
-          else:
-            url = adIndex['c:'+str(args['cid'])+':url']	    
-        else : 
-            url = adIndex['c:'+str(args['cid'])+':url']
+	  if adIndex.has_key('c:'+str(args['cid'])+':b:'+str(args['bid'])+':url'):
+	    if len(adIndex['c:'+str(args['cid'])+':b:'+str(args['bid'])+':url'])>0:
+	      url = adIndex['c:'+str(args['cid'])+':b:'+str(args['bid'])+':url']
+	    else:
+	      url = adIndex['c:'+str(args['cid'])+':url']	    
+	  else : 
+	      url = adIndex['c:'+str(args['cid'])+':url']
 
-        if len(thirdPartyUrl) == 0:
-            finalUrl = "http://rtbidder.impulse01.com/click?id="+impressionId+"&cid="+str(args['cid'])+"&red="+url
-        else:
-            finalUrl = thirdPartyUrl+urllib.quote("http://rtbidder.impulse01.com/click?id="+impressionId+"&cid="+str(args['cid'])+"&red="+url)
-        
-        if adIndex.has_key('b:'+str(args['bid'])+':url'):
-            creativeUrl = adIndex['b:'+str(args['bid'])+':url']
-            
-	width = adIndex['b:'+str(args['bid'])+':width']
-	height = adIndex['b:'+str(args['bid'])+':height']
-            
-        if adIndex['b:'+str(args['bid'])+':type'] == 1:
-            self.write('<a href="'+finalUrl+'" target="_blank"><img src="http://d3pim9r6015lw5.cloudfront.net/'+creativeUrl+'" width="'+str(width)+'" height="'+str(height)+'" border=0></a>')
- 
-        if adIndex['b:'+str(args['bid'])+':type'] == 2:
-            self.write('<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0" width="'+str(width)+'" height="'+str(height)+'"  id="mymoviename"><param name="movie" value="http://d3pim9r6015lw5.cloudfront.net/'+creativeUrl+'?clickTag='+urllib.quote(finalUrl)+'" /> <param name="quality" value="high" /> <param name="bgcolor" value="#ffffff" /><param name="wmode" value="transparent"><embed src="http://d3pim9r6015lw5.cloudfront.net/'+creativeUrl+'?clickTag='+urllib.quote(finalUrl)+'" quality="high" bgcolor="#ffffff" width="'+str(width)+'" height="'+str(height)+'" name="mymoviename" align="" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer"> </embed> </object>')
+	  if len(thirdPartyUrl) == 0:
+	      finalUrl = "http://rtbidder.impulse01.com/click?id="+impressionId+"&cid="+str(args['cid'])+"&red="+url
+	  else:
+	      finalUrl = thirdPartyUrl+urllib.quote("http://rtbidder.impulse01.com/click?id="+impressionId+"&cid="+str(args['cid'])+"&red="+url)
+	  
+	  if adIndex.has_key('b:'+str(args['bid'])+':url'):
+	      creativeUrl = adIndex['b:'+str(args['bid'])+':url']
+	      
+	  width = adIndex['b:'+str(args['bid'])+':width']
+	  height = adIndex['b:'+str(args['bid'])+':height']
+	      
+	  if adIndex['b:'+str(args['bid'])+':type'] == 1:
+	      self.write('<a href="'+finalUrl+'" target="_blank"><img src="http://d3pim9r6015lw5.cloudfront.net/'+creativeUrl+'" width="'+str(width)+'" height="'+str(height)+'" border=0></a>')
+  
+	  if adIndex['b:'+str(args['bid'])+':type'] == 2:
+	      self.write('<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0" width="'+str(width)+'" height="'+str(height)+'"  id="mymoviename"><param name="movie" value="http://d3pim9r6015lw5.cloudfront.net/'+creativeUrl+'?clickTag='+urllib.quote(finalUrl)+'" /> <param name="quality" value="high" /> <param name="bgcolor" value="#ffffff" /><param name="wmode" value="transparent"><embed src="http://d3pim9r6015lw5.cloudfront.net/'+creativeUrl+'?clickTag='+urllib.quote(finalUrl)+'" quality="high" bgcolor="#ffffff" width="'+str(width)+'" height="'+str(height)+'" name="mymoviename" align="" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer"> </embed> </object>')
 
-        if adIndex['b:'+str(args['bid'])+':type'] == 4:
-            code = adIndex['b:'+str(args['bid'])+':code']
-            code.replace("[CLICK_MACRO]",urllib.urlencode(finalUrl))
-            self.write(code)
+	  if adIndex['b:'+str(args['bid'])+':type'] == 4:
+	      code = adIndex['b:'+str(args['bid'])+':code']
+	      code.replace("[CLICK_MACRO]",urllib.urlencode(finalUrl))
+	      self.write(code)
 
-        if args.has_key('piggyback'):
-            pb=args['piggyback']
-            for p in pb:
-                self.write("<script src=\"http://rtbidder.impulse01.com/segment?group="+str(p)+"\"></script>")
+	  if args.has_key('piggyback'):
+	      pb=args['piggyback']
+	      for p in pb:
+		  self.write("<script src=\"http://rtbidder.impulse01.com/segment?group="+str(p)+"\"></script>")
 
-        #Set the view through cookie to indicate that this user has seen this ad impression.
-        #View through cookies are in the form of i203 where 203= campaign ID
-        cookiename = 'v'+str(args['cid'])        
-        impCookie = self.get_cookie(cookiename,default=False)
-        if impCookie == False:
-	    impressionCount=0
-	else:
-	    impCookie=json.loads(base64.b64decode(impCookie))
-	    impressionCount = impCookie["impressionCount"]+1
+	  #Set the view through cookie to indicate that this user has seen this ad impression.
+	  #View through cookies are in the form of i203 where 203= campaign ID
+	  cookiename = 'v'+str(args['cid'])        
+	  impCookie = self.get_cookie(cookiename,default=False)
+	  if impCookie == False:
+	      impressionCount=0
+	  else:
+	      impCookie=json.loads(base64.b64decode(impCookie))
+	      impressionCount = impCookie["impressionCount"]+1
 
-	cookieval = base64.b64encode(json.dumps({
-	    "impressionId":impressionId,
-	    "impressionCount":impressionCount,
-	    "timestamp_GMT":datetime.datetime.now().strftime("%Y-%d-%m %H:%M:%S")
-	}))
+	  cookieval = base64.b64encode(json.dumps({
+	      "impressionId":impressionId,
+	      "impressionCount":impressionCount,
+	      "timestamp_GMT":datetime.datetime.now().strftime("%Y-%d-%m %H:%M:%S")
+	  }))
 
-        if adIndex.has_key('vw:'+str(args['cid'])):
-            vw = adIndex['vw:'+str(args['cid'])]
-        else : 
-            vw=30
-        self.set_cookie(cookiename,cookieval,expires_days=vw)
-        self.flush()
+	  if adIndex.has_key('vw:'+str(args['cid'])):
+	      vw = adIndex['vw:'+str(args['cid'])]
+	  else : 
+	      vw=30
+	  self.set_cookie(cookiename,cookieval,expires_days=vw)
+	  self.flush()
 
-        message=json.dumps({"message":"IMP",
-            "impressionId":impressionId,
-            "imp_uid":imp_uid,
-            "campaignId":args['cid'],
-            "bannerId":args['bid'],
-            "exchange":args['e'],
-            "domain":args['d'],
-            "state":args['s'],
-            "city":args['c'],
-            "country":args["country"],
-            "bid":args['b'],
-            "price":encrPrice,
-            "impressionCount":impressionCount,
-            "isp":isp,
-            "ip":ip,
-            "timestamp_GMT":datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        })
-        self.sendToLogAgent(message)
+	  message=json.dumps({"message":"IMP",
+	      "impressionId":impressionId,
+	      "imp_uid":imp_uid,
+	      "campaignId":args['cid'],
+	      "bannerId":args['bid'],
+	      "exchange":args['e'],
+	      "domain":args['d'],
+	      "state":args['s'],
+	      "city":args['c'],
+	      "country":args["country"],
+	      "bid":args['b'],
+	      "price":encrPrice,
+	      "impressionCount":impressionCount,
+	      "isp":isp,
+	      "ip":ip,
+	      "timestamp_GMT":datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+	  })
+	  self.sendToLogAgent(message)
+	except:
+	  print "exception : writing default ad to browser"
+	  self.write("<a href=\"http://rtbidder.impulse01.com/click?id=84c380aa-67af-4f07-b044-8f549a35788f&cid=64&red=https://www.fundsindia.com/content/jsp/ELSSFunds.do?utm_source=impulse&utm_medium=display&utm_campaign=ELSS&utm_content=160X600\" target=\"_blank\"><img src=\"http://d3pim9r6015lw5.cloudfront.net/creatives/2/160x600_ELSS.gif\" width=\"160\" height=\"600\" border=0></a>")
 
     def click(self,info):
         cid = int(self.get_argument('cid'))
