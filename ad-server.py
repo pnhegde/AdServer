@@ -272,6 +272,8 @@ class MainHandler(tornado.web.RequestHandler):
     def conversion(self,info):
         try:
             campaignId=int(self.get_argument('id'))
+            if id==57:
+	      self.write("<img height=\"1\" width=\"1\" style=\"border-style:none;\" alt=\"\" src=\"http://www.googleadservices.com/pagead/conversion/952217567/?value=1.4&amp;label=qG8FCMnP2gQQ39-GxgM&amp;guid=ON&amp;script=0\"/>")
             cookiename="c"+str(campaignId)
             clickinfo=self.get_cookie(cookiename,default=False)
             message=""
