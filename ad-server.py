@@ -134,6 +134,13 @@ class MainHandler(tornado.web.RequestHandler):
 	      for p in pb:
 		  self.write("<script src=\"http://rtbidder.impulse01.com/segment?group="+str(p)+"\"></script>")
 
+		  
+		  
+		  
+	  if args['d']=="taxguru.in":
+	    self.write("<img src='https://d.adroll.com/imgpix/x/seg?add=546673&t=2' width='1' height='1'/>")
+	    
+	    
 	  #Set the view through cookie to indicate that this user has seen this ad impression.
 	  #View through cookies are in the form of i203 where 203= campaign ID
 	  cookiename = 'v'+str(args['cid'])        

@@ -45,3 +45,15 @@ impressionId, imp_uid, campaignId, bannerId, exchange, domain, state,city, count
 
 <iframe src="http://rtbidder.impulse01.com/serve?info=eyJzIjogImhhcnlhbmEiLCAiYiI6IDAuNjUwMDAwMDAwMDAwMDAwMDIsICJlIjogImdvb2dsZSIsICJkIjogImhvbGlkYXlpcS5jb20iLCAiY2lkIjogNTksICJjb3VudHJ5IjogImluIiwgImJpZCI6IDg5LCAiYyI6ICJndXJnYW9uIn0&p=%%WINNING_PRICE%%&r=%%CACHEBUSTER%%&red=%%CLICK_URL_UNESC%%"
  width="120" height="600" frameborder=0 marginwidth=0 marginheight=0 scrolling=NO></iframe>
+
+
+Click Tracker
+e : "directclick"
+d : "facebook.com"
+b : 0.11
+cid : 22
+
+Step 1: Set ISP
+Step 2: Set state, city, country
+Step 3: Set imp_uid
+Step 4: Set impressionId
