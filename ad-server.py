@@ -87,7 +87,7 @@ class MainHandler(tornado.web.RequestHandler):
 	  #Here we assume that the third party URL being passed is not URL Escaped. Hence split by &red=
 	  ta = self.request.query.split("&red=")
 	  thirdPartyUrl = ta[1]
-	  if args['e']=="direct":
+	  if args['e']!="direct":
 	    thirdPartyUrl=""
 	    
 	  ip = self.request.remote_ip
