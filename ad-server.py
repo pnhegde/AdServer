@@ -178,6 +178,7 @@ class MainHandler(tornado.web.RequestHandler):
 	  self.sendToLogAgent(message)
 	except:
 	  print "exception : writing default ad to browser"
+	  print sys.exc_info()
 	  self.write("<a href=\"http://rtbidder.impulse01.com/click?id=84c380aa-67af-4f07-b044-8f549a35788f&cid=64&red=https://www.fundsindia.com/content/jsp/ELSSFunds.do?utm_source=impulse&utm_medium=display&utm_campaign=ELSS&utm_content=160X600\" target=\"_blank\"><img src=\"http://d3pim9r6015lw5.cloudfront.net/creatives/2/160x600_ELSS.gif\" width=\"160\" height=\"600\" border=0></a>")
 
     def click(self,info):
