@@ -57,3 +57,10 @@ Step 1: Set ISP
 Step 2: Set state, city, country
 Step 3: Set imp_uid
 Step 4: Set impressionId
+
+
+{
+"100":"https://www.fundsindia.com/content/jsp/ELSSFunds.do?utm_source=impulse&utm_medium=display&utm_campaign=ELSS&utm_content=300X250",
+"99":"https://www.fundsindia.com/content/jsp/ELSSFunds.do?utm_source=impulse&utm_medium=display&utm_campaign=ELSS&utm_content=728X90",
+"98":"https://www.fundsindia.com/content/jsp/ELSSFunds.do?utm_source=impulse&utm_medium=display&utm_campaign=ELSS&utm_content=160X600",
+"97":"https://www.fundsindia.com/content/jsp/ELSSFunds.do?utm_source=impulse&utm_medium=display&utm_campaign=ELSS&utm_content=120X600"}

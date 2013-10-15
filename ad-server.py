@@ -137,27 +137,6 @@ class MainHandler(tornado.web.RequestHandler):
 	      for p in pb:
 		  self.write("<script src=\"http://rtbidder.impulse01.com/segment?group="+str(p)+"\"></script>")
 
-
-	  if args['d']=="taxguru.in":
-	    self.write("""
-	    <script type="text/javascript">
-adroll_adv_id = "J256YGHGXZCULB32RG5S3S";
-adroll_pix_id = "7B5T5M5XFVGK5HN4AJOR2T";
-(function () {
-var oldonload = window.onload;
-window.onload = function(){
-   __adroll_loaded=true;
-   var scr = document.createElement("script");
-   var host = (("https:" == document.location.protocol) ? "https://s.adroll.com" : "http://a.adroll.com");
-   scr.setAttribute('async', 'true');
-   scr.type = "text/javascript";
-   scr.src = host + "/j/roundtrip.js";
-   ((document.getElementsByTagName('head') || [null])[0] ||
-    document.getElementsByTagName('script')[0].parentNode).appendChild(scr);
-   if(oldonload){oldonload()}};
-}());
-</script>
-	    """)
 	  #Set the view through cookie to indicate that this user has seen this ad impression.
 	  #View through cookies are in the form of i203 where 203= campaign ID
 	  cookiename = 'v'+str(args['cid'])        
